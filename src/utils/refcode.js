@@ -14,7 +14,14 @@ export function saveToLocal(refCode, data) {
   return record;
 }
 
-export function queryByRefAndPhone(refCode, phoneLast4) {
+export function queryByRefAndPhone(refCode, phoneLast4, district = '') {
   const existing = JSON.parse(localStorage.getItem('tehas_requests') || '[]');
-  return existing.find(r => r.refCode === refCode && r.phone?.slice(-4) === phoneLast4) || null;
+  return existing.find(r => {
+    const refMatch      = r.refCode === refCode;
+    const phoneMatch    = r.phone?.slice(-4) === phoneLast4;
+    const districtTrim  = district.trim();
+    const districtMatch = !districtTrim ||
+      (r.ilce || '').toLowerCase().includes(districtTrim.toLowerCase());
+    return refMatch && phoneMatch && districtMatch;
+  }) || null;
 }

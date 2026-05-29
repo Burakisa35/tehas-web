@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState, useRef } from 'react';
 import { WA_PHONE } from '../utils/whatsapp.js';
+import { queryByRefAndPhone } from '../utils/refcode.js';
 
 const FLOWS = [
   {
@@ -44,6 +45,34 @@ const FLOWS = [
 
 export default function HomeScreen({ onFlowStart }) {
   const waHref = `https://wa.me/${WA_PHONE}?text=${encodeURIComponent('Merhaba, TEHAŞ hakkında bilgi almak istiyorum.')}`;
+
+  // ── Referans sorgulama ─────────────────────────────────────────
+  const refCodeRef    = useRef(null);
+  const districtRef   = useRef(null);
+  const phoneRef      = useRef(null);
+  const [refResult, setRefResult] = useState(null);
+  const [refError,  setRefError]  = useState(null);
+
+  function handleQuery() {
+    const refCode    = (refCodeRef.current?.value   || '').trim().toUpperCase();
+    const district   = (districtRef.current?.value  || '').trim();
+    const phoneLast4 = (phoneRef.current?.value     || '').replace(/\D/g, '');
+
+    if (!refCode || phoneLast4.length !== 4) {
+      setRefError('Referans kodu ve telefon son 4 hane zorunludur.');
+      setRefResult(null);
+      return;
+    }
+
+    const result = queryByRefAndPhone(refCode, phoneLast4, district);
+    if (result) {
+      setRefResult(result);
+      setRefError(null);
+    } else {
+      setRefResult(null);
+      setRefError('Kayıt bulunamadı. Referans kodu ve telefon bilgilerini kontrol edin.');
+    }
+  }
 
   return (
     <div className="app">
@@ -113,6 +142,7 @@ export default function HomeScreen({ onFlowStart }) {
 
       {/* Güven unsurları */}
       <div className="trust-bar" role="list" aria-label="Güven bilgileri">
+
         <div className="trust-item" role="listitem">
           <span className="trust-ico">🏅</span>
           <div>
@@ -142,6 +172,76 @@ export default function HomeScreen({ onFlowStart }) {
           </div>
         </div>
       </div>
+
+      {/* Referans sorgulama */}
+      <section className="ref-section" aria-label="Referans sorgulama">
+        <div className="ref-eye">Referans Sorgulama</div>
+        <h2 className="ref-h">Referans kodunuz var mı?</h2>
+        <p className="ref-p">Önceki talebinizin durumunu sorgulayın.</p>
+
+        <div className="ref-fields">
+          <input
+            ref={refCodeRef}
+            id="ref-code-input"
+            type="text"
+            autoComplete="off"
+            autoCapitalize="characters"
+            placeholder="TEH-K7M-4Q9"
+          />
+          <input
+            ref={districtRef}
+            id="ref-district-input"
+            type="text"
+            autoComplete="off"
+            placeholder="İlçe / Bölge"
+          />
+          <input
+            ref={phoneRef}
+            id="ref-phone-input"
+            type="tel"
+            inputMode="numeric"
+            autoComplete="off"
+            maxLength={4}
+            placeholder="Telefon son 4 hane"
+          />
+        </div>
+
+        <button
+          className="ref-submit"
+          type="button"
+          data-action="query-ref"
+          onClick={handleQuery}
+        >
+          Talebi Sorgula
+        </button>
+
+        {refResult && (
+          <div id="ref-result" className="ref-result" role="region" aria-label="Sorgu sonucu">
+            <div className="ref-result-row">
+              <span className="ref-result-k">Referans</span>
+              <span className="ref-result-v ref-result-code">{refResult.refCode}</span>
+            </div>
+            <div className="ref-result-row">
+              <span className="ref-result-k">Durum</span>
+              <span className="ref-result-v">{refResult.status || 'Talep alındı'}</span>
+            </div>
+            <div className="ref-result-row">
+              <span className="ref-result-k">Teknisyen</span>
+              <span className="ref-result-v">Atanıyor...</span>
+            </div>
+            <div className="ref-result-row">
+              <span className="ref-result-k">Hizmet</span>
+              <span className="ref-result-v">{refResult.flowId || '—'}</span>
+            </div>
+          </div>
+        )}
+
+        {refError && (
+          <p id="ref-error" className="ref-error-msg" role="alert">
+            {refError}
+          </p>
+        )}
+      </section>
     </div>
   );
 }
