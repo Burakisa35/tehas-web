@@ -54,10 +54,11 @@ function label(map, val) {
 }
 
 // ── WhatsApp mesajı üretici ────────────────────────────────────────
-export function buildWaMessage(flowId, answers) {
+export function buildWaMessage(flowId, answers, refCode) {
   const lines = [];
 
   lines.push('Merhaba, TEHAŞ sisteminden talep oluşturdum.');
+  if (refCode) lines.push(`Referans kodu: ${refCode}`);
   lines.push('');
   lines.push(`Hizmet: ${label(HIZMET_LABELS, flowId)}`);
 
@@ -125,8 +126,8 @@ export function buildWaMessage(flowId, answers) {
   return lines.join('\n');
 }
 
-export function buildWaUrl(flowId, answers) {
-  const msg = buildWaMessage(flowId, answers);
+export function buildWaUrl(flowId, answers, refCode) {
+  const msg = buildWaMessage(flowId, answers, refCode);
   return `https://wa.me/${WA_PHONE}?text=${encodeURIComponent(msg)}`;
 }
 

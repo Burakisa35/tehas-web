@@ -1,9 +1,19 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { buildWaUrl, buildSummaryRows } from '../utils/whatsapp.js';
+import { generateRefCode, saveToLocal } from '../utils/refcode.js';
 
 export default function DoneScreen({ flowId, answers, onRestart, onHome }) {
-  const waUrl   = buildWaUrl(flowId, answers);
-  const rows    = buildSummaryRows(flowId, answers);
+  const [refCode, setRefCode] = useState('');
+
+  // Mount'ta bir kez çalışır — ref kodu üret ve localStorage'a kaydet
+  useEffect(() => {
+    const code = generateRefCode();
+    saveToLocal(code, { flowId, phone: answers.iletisim_tel, ...answers });
+    setRefCode(code);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const waUrl = buildWaUrl(flowId, answers, refCode);
+  const rows  = buildSummaryRows(flowId, answers);
 
   const hasContact = answers.iletisim_ad || answers.iletisim_tel;
 
@@ -32,6 +42,34 @@ export default function DoneScreen({ flowId, answers, onRestart, onHome }) {
             ? 'Aşağıdaki özeti WhatsApp ile gönderin. En kısa sürede dönüş yapılır.'
             : 'Talebinizin özetini WhatsApp ile gönderin, birlikte netleştirelim.'}
         </p>
+
+        {/* Referans kodu */}
+        {refCode && (
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 10,
+              padding: '12px 14px',
+              background: 'rgba(52,229,197,.06)',
+              border: '1px solid rgba(52,229,197,.2)',
+              borderRadius: 10,
+              marginBottom: 16,
+            }}
+            role="note"
+            aria-label="Referans kodu"
+          >
+            <span style={{ fontSize: 15, lineHeight: 1 }} aria-hidden="true">🔖</span>
+            <div>
+              <div style={{ fontSize: 10, fontFamily: 'var(--f-mono)', letterSpacing: '.18em', color: 'var(--t-3)', textTransform: 'uppercase', marginBottom: 3 }}>
+                Referans kodu
+              </div>
+              <div style={{ fontFamily: 'var(--f-mono)', fontSize: 15, fontWeight: 600, letterSpacing: '.12em', color: 'var(--cyan)' }}>
+                {refCode}
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Özet kartı */}
         <div className="summary-card" role="region" aria-label="Talep özeti">
