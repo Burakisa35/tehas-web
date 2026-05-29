@@ -38,9 +38,14 @@ function extractDigits(val) {
   return (val || '').replace(/\D/g, '');
 }
 
-// 0535 123 45 67 formatına dönüştürür (max 11 rakam)
+// 0535 123 45 67 formatına dönüştürür — 0 ve 5 ön-eki korumalı
 function formatPhone(raw) {
-  const d = extractDigits(raw).slice(0, 11);
+  let digits = (raw || '').replace(/\D/g, '');
+  if (digits.length === 0) return '';
+  if (!digits.startsWith('0')) digits = '0' + digits;
+  if (digits.length >= 2 && digits[1] !== '5') digits = '05' + digits.slice(2);
+  digits = digits.slice(0, 11);
+  const d = digits;
   if (d.length <= 4) return d;
   if (d.length <= 7) return `${d.slice(0,4)} ${d.slice(4)}`;
   if (d.length <= 9) return `${d.slice(0,4)} ${d.slice(4,7)} ${d.slice(7)}`;
@@ -66,14 +71,18 @@ function ContactForm({ answers, onChange }) {
   const adVal    = answers.iletisim_ad || '';
   const adError  = adTouched && adVal.length > 0 && !isValidName(adVal);
 
-  const digits   = extractDigits(answers.iletisim_tel);
-  const hasInput = digits.length > 0;
+  const digits   = extractDigits(answers.iletisim_tel || '');
+  const hasInput = digits.length > 2;   // '05' gibi yarım değerlerde hata gösterme
   const isValid  = isValidTurkishMobile(digits);
   const telError = telTouched && hasInput && !isValid;
 
   function handleTelChange(e) {
-    const formatted = formatPhone(e.target.value);
-    onChange('iletisim_tel', formatted);
+    const raw         = e.target.value;
+    const currentDigs = extractDigits(answers.iletisim_tel || '');
+    const newDigs     = raw.replace(/\D/g, '');
+    const isDeleting  = newDigs.length < currentDigs.length;
+    void isDeleting; // silme/ekleme ayrımı; her iki durumda da formatPhone çalışır
+    onChange('iletisim_tel', formatPhone(raw));
   }
 
   return (
@@ -116,6 +125,9 @@ function ContactForm({ answers, onChange }) {
           style={telError ? { borderColor: 'rgba(248,113,113,.65)' } : undefined}
           value={answers.iletisim_tel || ''}
           onChange={handleTelChange}
+          onFocus={() => {
+            if (!answers.iletisim_tel) onChange('iletisim_tel', '05');
+          }}
           onBlur={() => setTelTouched(true)}
           aria-invalid={telError}
           aria-describedby={telError ? 'tel-error' : undefined}
@@ -174,17 +186,94 @@ function MahalleSelect({ ilce, value, onChange }) {
 }
 
 // ── Textarea ──────────────────────────────────────────────────────
+const KAMERA_DETAY_SORULAR = [
+  'Mevcut kamera sistemi var mı?',
+  'Marka / model biliniyor mu?',
+  'Mevcutta kaç kamera var?',
+  'Yeni kaç kamera eklenecek?',
+  'Kayıt cihazı (DVR/NVR) mevcut mu?',
+  'İç mekan mı, dış mekan mı?',
+  'Gece görüşü isteniyor mu?',
+  'Yaklaşık kablo mesafesi nedir?',
+];
+
+const KAMERA_DETAY_ORNEK =
+  'Örn: Mevcutta 4 kameralı Hikvision sistem var. ' +
+  '2 adet dış mekan kamera eklenecek. ' +
+  'Kayıt cihazı mevcut. Gece görüşü istiyorum. ' +
+  'Kablo mesafesi yaklaşık 20 metre.';
+
 function TextareaField({ stepId, answers, onChange }) {
+  const isKameraDetay = stepId === 'kamera_detay';
+
   return (
-    <textarea
-      className="field-input"
-      rows={4}
-      style={{ height: 'auto', paddingTop: 14, paddingBottom: 14, resize: 'vertical' }}
-      placeholder="Ek bilgi veya not ekleyin…"
-      value={answers[stepId] || ''}
-      onChange={(e) => onChange(stepId, e.target.value)}
-      aria-label="Ek notlar"
-    />
+    <div>
+      {isKameraDetay && (
+        <div
+          style={{
+            marginBottom: 14,
+            padding: '12px 14px',
+            background: 'rgba(52,229,197,.06)',
+            border: '1px solid rgba(52,229,197,.15)',
+            borderRadius: 10,
+          }}
+        >
+          <div
+            style={{
+              fontFamily: 'var(--f-mono)',
+              fontSize: 10,
+              fontWeight: 500,
+              letterSpacing: '.18em',
+              color: 'var(--cyan)',
+              textTransform: 'uppercase',
+              marginBottom: 10,
+            }}
+          >
+            Bize şunları anlatın
+          </div>
+          <ul style={{ display: 'flex', flexDirection: 'column', gap: 6, paddingLeft: 0, listStyle: 'none' }}>
+            {KAMERA_DETAY_SORULAR.map((q) => (
+              <li
+                key={q}
+                style={{ fontSize: 13, color: 'var(--t-2)', lineHeight: 1.5, display: 'flex', gap: 8, alignItems: 'flex-start' }}
+              >
+                <span style={{ color: 'var(--cyan)', flexShrink: 0 }}>›</span>
+                {q}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      <textarea
+        className="field-input"
+        rows={isKameraDetay ? 5 : 4}
+        style={{ height: 'auto', paddingTop: 14, paddingBottom: 14, resize: 'vertical' }}
+        placeholder={isKameraDetay ? KAMERA_DETAY_ORNEK : 'Ek bilgi veya not ekleyin…'}
+        value={answers[stepId] || ''}
+        onChange={(e) => onChange(stepId, e.target.value)}
+        aria-label={isKameraDetay ? 'Mevcut kamera sistemi hakkında bilgi' : 'Ek notlar'}
+      />
+
+      {isKameraDetay && (
+        <p
+          style={{
+            marginTop: 10,
+            fontSize: 12,
+            color: 'var(--t-3)',
+            lineHeight: 1.6,
+            padding: '10px 13px',
+            background: 'var(--bg-1)',
+            border: '1px solid var(--line)',
+            borderRadius: 9,
+          }}
+        >
+          📷 Varsa mevcut kamera, DVR/NVR, modem/switch veya
+          arıza ekranının fotoğrafını WhatsApp üzerinden
+          göndermeniz teşhisi hızlandırır.
+        </p>
+      )}
+    </div>
   );
 }
 

@@ -253,9 +253,18 @@ export const KAMERA_FLOW = {
       skipLabel: 'Hayır, yeterli',
       condition: (a) => ['yeni_sistem', 'ek_kamera', 'sadece_montaj'].includes(a.kamera_is_tipi),
     },
-    ILETISIM_ADIMI,
     ...KONUM_ADIMLARI,
     ZAMAN_ADIMI,
+    {
+      id: 'kamera_detay',
+      label: 'Mevcut Sistem',
+      title: 'Mevcut sistem hakkında bilgi verin',
+      subtitle: null,
+      type: 'textarea',
+      required: false,
+      skipLabel: 'Bilgim yok / Atla',
+    },
+    ILETISIM_ADIMI,
   ],
 };
 

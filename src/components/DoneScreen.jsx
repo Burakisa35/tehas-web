@@ -154,6 +154,43 @@ export default function DoneScreen({ flowId, answers, onRestart, onHome }) {
           </div>
         </div>
 
+        {/* Kamera: fotoğraf ipucu */}
+        {flowId === 'kamera' && (
+          <div
+            style={{
+              marginBottom: 16,
+              padding: '12px 14px',
+              background: 'rgba(52,229,197,.04)',
+              border: '1px solid rgba(52,229,197,.18)',
+              borderRadius: 10,
+              fontSize: 13,
+              color: 'var(--t-2)',
+              lineHeight: 1.65,
+            }}
+          >
+            <div
+              style={{
+                fontFamily: 'var(--f-mono)',
+                fontSize: 9,
+                fontWeight: 500,
+                letterSpacing: '.18em',
+                color: 'var(--t-3)',
+                textTransform: 'uppercase',
+                marginBottom: 7,
+              }}
+            >
+              Fotoğraf ile hızlandırın
+            </div>
+            Göndermeden önce varsa mevcut sistemin fotoğrafını veya
+            ekran görüntüsünü WhatsApp'a ekleyebilirsiniz.
+            <br />
+            <span style={{ fontSize: 11, color: 'var(--t-4)', marginTop: 5, display: 'block' }}>
+              İpucu: Referans kodunu kopyaladıktan sonra
+              ekran görüntüsü almanız kodu kaybetmenizi önler.
+            </span>
+          </div>
+        )}
+
         {/* CTA'lar */}
         <div className="done-actions">
           <a

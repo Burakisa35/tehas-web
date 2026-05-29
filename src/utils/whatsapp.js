@@ -98,6 +98,11 @@ export function buildWaMessage(flowId, answers, refCode) {
     if (answers.kamera_not) {
       lines.push(`Detay: ${answers.kamera_not}`);
     }
+    if (answers.kamera_detay) {
+      lines.push('');
+      lines.push('Mevcut Sistem Bilgisi');
+      lines.push(answers.kamera_detay);
+    }
   }
 
   // Konum
@@ -121,6 +126,14 @@ export function buildWaMessage(flowId, answers, refCode) {
   }
   if (answers.iletisim_tel) {
     lines.push(`Telefon: ${answers.iletisim_tel}`);
+  }
+
+  if (flowId === 'kamera') {
+    lines.push('');
+    lines.push(
+      'Varsa mevcut sistem fotoğraflarını ve ' +
+      'ekran görüntüsünü bu mesaja ekleyebilirsiniz.'
+    );
   }
 
   return lines.join('\n');
@@ -160,6 +173,10 @@ export function buildSummaryRows(flowId, answers) {
       rows.push({ k: 'Kamera adedi', v: answers.kamera_adet });
     if (answers.kamera_yer)
       rows.push({ k: 'Kurulum yeri', v: label(YER_LABELS, answers.kamera_yer) });
+    if (answers.kamera_not)
+      rows.push({ k: 'Detay', v: answers.kamera_not });
+    if (answers.kamera_detay)
+      rows.push({ k: 'Mevcut Sistem', v: answers.kamera_detay });
   }
 
   if (answers.ilce) {
