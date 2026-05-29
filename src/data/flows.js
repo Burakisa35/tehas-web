@@ -173,9 +173,9 @@ export const ELEKTRIK_FLOW = {
         { value: '100m_ustu',label: '100m+',     ico: '📏' },
       ],
     },
+    ILETISIM_ADIMI,
     ...KONUM_ADIMLARI,
     ZAMAN_ADIMI,
-    ILETISIM_ADIMI,
   ],
 };
 
@@ -253,9 +253,9 @@ export const KAMERA_FLOW = {
       skipLabel: 'Hayır, yeterli',
       condition: (a) => ['yeni_sistem', 'ek_kamera', 'sadece_montaj'].includes(a.kamera_is_tipi),
     },
+    ILETISIM_ADIMI,
     ...KONUM_ADIMLARI,
     ZAMAN_ADIMI,
-    ILETISIM_ADIMI,
   ],
 };
 
@@ -282,9 +282,9 @@ export const UYDU_FLOW = {
         { value: 'diger',        label: 'Diğer / Emin değilim',        ico: '💬', sub: '' },
       ],
     },
+    ILETISIM_ADIMI,
     ...KONUM_ADIMLARI,
     ZAMAN_ADIMI,
-    ILETISIM_ADIMI,
   ],
 };
 
@@ -310,9 +310,9 @@ export const AG_FLOW = {
         { value: 'diger',   label: 'Diğer / Emin değilim',        ico: '💬', sub: '' },
       ],
     },
+    ILETISIM_ADIMI,
     ...KONUM_ADIMLARI,
     ZAMAN_ADIMI,
-    ILETISIM_ADIMI,
   ],
 };
 
@@ -337,9 +337,9 @@ export const OTOMASYON_FLOW = {
         { value: 'diger',  label: 'Diğer / Emin değilim',       ico: '💬', sub: '' },
       ],
     },
+    ILETISIM_ADIMI,
     ...KONUM_ADIMLARI,
     ZAMAN_ADIMI,
-    ILETISIM_ADIMI,
   ],
 };
 
@@ -364,9 +364,9 @@ export const ALARM_FLOW = {
         { value: 'diger',     label: 'Diğer / Emin değilim',    ico: '💬', sub: '' },
       ],
     },
+    ILETISIM_ADIMI,
     ...KONUM_ADIMLARI,
     ZAMAN_ADIMI,
-    ILETISIM_ADIMI,
   ],
 };
 
