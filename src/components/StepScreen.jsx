@@ -52,9 +52,19 @@ function isValidTurkishMobile(digits) {
   return digits.length === 11 && digits[0] === '0' && digits[1] === '5';
 }
 
+// Ad: min 2 karakter, yalnızca harf ve boşluk (Türkçe dahil)
+const AD_REGEX = /^[a-zA-ZğüşıöçĞÜŞİÖÇ\s]{2,}$/;
+function isValidName(val) {
+  return AD_REGEX.test((val || '').trim());
+}
+
 // ── İletişim formu ────────────────────────────────────────────────
 function ContactForm({ answers, onChange }) {
+  const [adTouched,  setAdTouched]  = useState(false);
   const [telTouched, setTelTouched] = useState(false);
+
+  const adVal    = answers.iletisim_ad || '';
+  const adError  = adTouched && adVal.length > 0 && !isValidName(adVal);
 
   const digits   = extractDigits(answers.iletisim_tel);
   const hasInput = digits.length > 0;
@@ -76,9 +86,22 @@ function ContactForm({ answers, onChange }) {
           type="text"
           autoComplete="name"
           placeholder="Ahmet Yılmaz"
-          value={answers.iletisim_ad || ''}
+          style={adError ? { borderColor: 'rgba(248,113,113,.65)' } : undefined}
+          value={adVal}
           onChange={(e) => onChange('iletisim_ad', e.target.value)}
+          onBlur={() => setAdTouched(true)}
+          aria-invalid={adError}
+          aria-describedby={adError ? 'ad-error' : undefined}
         />
+        {adError && (
+          <p
+            id="ad-error"
+            role="alert"
+            style={{ fontSize: 12, color: 'var(--red)', marginTop: 6, lineHeight: 1.4 }}
+          >
+            Yalnızca harf ve boşluk girin (en az 2 karakter)
+          </p>
+        )}
       </div>
       <div>
         <label className="field-label" htmlFor="iletisim_tel">Telefon</label>
@@ -114,7 +137,7 @@ function ContactForm({ answers, onChange }) {
   );
 }
 
-export { extractDigits, isValidTurkishMobile };
+export { extractDigits, isValidTurkishMobile, isValidName };
 
 // ── Konum seçimi ──────────────────────────────────────────────────
 function IlceSelect({ value, onChange }) {
@@ -179,11 +202,10 @@ export default function StepScreen({
 }) {
   const pct = Math.round(((stepIndex + 1) / totalSteps) * 100);
 
-  // İletişim adımında zorunlu alanlar dolu mu?
-  // Telefon: 11 hane, 0 ile başlar, ikinci hane 5 (Türk GSM kuralı)
+  // İletişim: ad regex + Türk GSM kuralı
   const isContactValid =
     step.type !== 'contact' ||
-    (answers.iletisim_ad?.trim() && isValidTurkishMobile(extractDigits(answers.iletisim_tel)));
+    (isValidName(answers.iletisim_ad) && isValidTurkishMobile(extractDigits(answers.iletisim_tel)));
 
   // İlçe veya mahalle seçiminde değer var mı?
   const hasLocationValue =
@@ -195,10 +217,13 @@ export default function StepScreen({
     (step.type === 'choice' || step.type === 'choice-grid') &&
     !!answers[step.id];
 
+  // İlçe seçilmemişse (placeholder) Devam Et disabled — Skip hâlâ çalışır
+  const ilceBlocked = step.type === 'ilce-select' && !answers.ilce;
+
   // İleri butonu aktif mi?
   const canProceed = step.required
     ? isContactValid || hasLocationValue || hasChoiceValue
-    : true;
+    : !ilceBlocked;
 
   function handleContactChange(field, val) {
     onAnswer(field, val);
