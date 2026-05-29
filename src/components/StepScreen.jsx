@@ -33,8 +33,19 @@ function ChoiceList({ options, value, onChange, grid = false }) {
   );
 }
 
+// Sadece rakamları çıkartır — boşluk, tire, + gibi karakterleri atar
+function extractDigits(val) {
+  return (val || '').replace(/\D/g, '');
+}
+
 // ── İletişim formu ────────────────────────────────────────────────
 function ContactForm({ answers, onChange }) {
+  const [telTouched, setTelTouched] = useState(false);
+
+  const digits    = extractDigits(answers.iletisim_tel);
+  const telError  = telTouched && digits.length > 0 && digits.length < 10;
+  const telBorder = telError ? 'rgba(248,113,113,.6)' : undefined;
+
   return (
     <div className="field-group">
       <div>
@@ -55,19 +66,34 @@ function ContactForm({ answers, onChange }) {
           id="iletisim_tel"
           className="field-input"
           type="tel"
-          inputMode="tel"
+          inputMode="numeric"
           autoComplete="tel"
           placeholder="05XX XXX XX XX"
+          style={telBorder ? { borderColor: telBorder } : undefined}
           value={answers.iletisim_tel || ''}
           onChange={(e) => onChange('iletisim_tel', e.target.value)}
+          onBlur={() => setTelTouched(true)}
+          aria-invalid={telError}
+          aria-describedby={telError ? 'tel-error' : undefined}
         />
+        {telError && (
+          <p
+            id="tel-error"
+            role="alert"
+            style={{ fontSize: 12, color: 'var(--red)', marginTop: 6, lineHeight: 1.4 }}
+          >
+            Geçerli telefon girin (en az 10 rakam)
+          </p>
+        )}
       </div>
       <p style={{ fontSize: 11, color: 'var(--t-4)', lineHeight: 1.5, marginTop: 4 }}>
-        📋 Yalnızca bu talep için kullanılır. Üçüncü tarafla paylaşılmaz. KVKK kapsamında korunur.
+        Yalnızca bu talep için kullanılır. Üçüncü tarafla paylaşılmaz. KVKK kapsamında korunur.
       </p>
     </div>
   );
 }
+
+export { extractDigits };
 
 // ── Konum seçimi ──────────────────────────────────────────────────
 function IlceSelect({ value, onChange }) {
@@ -133,9 +159,10 @@ export default function StepScreen({
   const pct = Math.round(((stepIndex + 1) / totalSteps) * 100);
 
   // İletişim adımında zorunlu alanlar dolu mu?
+  // Telefon: yalnızca rakam sayısı >= 10 kabul edilir (boşluk/tire/harf geçersiz)
   const isContactValid =
     step.type !== 'contact' ||
-    (answers.iletisim_ad?.trim() && answers.iletisim_tel?.trim()?.length >= 10);
+    (answers.iletisim_ad?.trim() && extractDigits(answers.iletisim_tel).length >= 10);
 
   // İlçe veya mahalle seçiminde değer var mı?
   const hasLocationValue =

@@ -37,8 +37,10 @@ const YER_LABELS = {
 };
 
 const ZAMAN_LABELS = {
-  acil: '⚡ Acil — bugün/yarın', bu_hafta: '📅 Bu hafta',
-  bu_ay: '🗓️ Bu ay içinde', gorusmeye_gore: '💬 Görüşerek belirleriz',
+  acil:           'Acil — bugün/yarın',
+  bu_hafta:       'Bu hafta',
+  bu_ay:          'Bu ay içinde',
+  gorusmeye_gore: 'Görüşerek belirleriz',
 };
 
 const HIZMET_LABELS = {
