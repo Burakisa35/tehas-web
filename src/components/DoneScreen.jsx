@@ -2,10 +2,46 @@ import React, { useState, useEffect } from 'react';
 import { buildWaUrl, buildSummaryRows } from '../utils/whatsapp.js';
 import { generateRefCode, saveToLocal } from '../utils/refcode.js';
 
+// buildSummaryRows'un döndürdüğü satırlardan 3 blok üretir
+function buildFis(rows) {
+  const get = (k) => rows.find(r => r.k === k)?.v;
+
+  // Blok 1 — Talep: Hizmet / İş tipi — detaylar
+  const hizmet  = get('Hizmet');
+  const isTipi  = get('İş tipi');
+  const urun    = get('Ürün');
+  const adet    = get('Adet');
+  const kapsam  = get('Kapsam');
+  const kamera  = get('Kamera adedi');
+  const kurYer  = get('Kurulum yeri');
+
+  const talepBase = [hizmet, isTipi].filter(Boolean).join(' / ');
+  const detay     = [
+    urun,
+    adet  ? adet + ' adet' : null,
+    kapsam,
+    kamera,
+    kurYer,
+  ].filter(Boolean).join(' · ');
+  const talepV = talepBase + (detay ? ' — ' + detay : '') || '—';
+
+  // Blok 2 — Planlama: Zaman · Konum
+  const zaman = get('Zaman');
+  const konum = get('Konum');
+  const planV = [zaman, konum].filter(Boolean).join(' · ') || '—';
+
+  // Blok 3 — İletişim: Ad · Telefon
+  const ad  = get('Ad');
+  const tel = get('Telefon');
+  const iletV = [ad, tel].filter(Boolean).join(' · ') || '—';
+
+  return { talepV, planV, iletV };
+}
+
 export default function DoneScreen({ flowId, answers, onRestart, onHome }) {
   const [refCode, setRefCode] = useState('');
+  const [copied,  setCopied]  = useState(false);
 
-  // Mount'ta bir kez çalışır — ref kodu üret ve localStorage'a kaydet
   useEffect(() => {
     const code = generateRefCode();
     saveToLocal(code, { flowId, phone: answers.iletisim_tel, ...answers });
@@ -14,8 +50,16 @@ export default function DoneScreen({ flowId, answers, onRestart, onHome }) {
 
   const waUrl = buildWaUrl(flowId, answers, refCode);
   const rows  = buildSummaryRows(flowId, answers);
+  const { talepV, planV, iletV } = buildFis(rows);
 
   const hasContact = answers.iletisim_ad || answers.iletisim_tel;
+
+  function handleCopy() {
+    navigator.clipboard.writeText(refCode).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1400);
+    });
+  }
 
   return (
     <div className="app">
@@ -43,12 +87,13 @@ export default function DoneScreen({ flowId, answers, onRestart, onHome }) {
             : 'Talebinizin özetini WhatsApp ile gönderin, birlikte netleştirelim.'}
         </p>
 
-        {/* Referans kodu */}
+        {/* Referans kodu + kopyala */}
         {refCode && (
           <div
             style={{
               display: 'flex',
               alignItems: 'center',
+              justifyContent: 'space-between',
               gap: 10,
               padding: '12px 14px',
               background: 'rgba(52,229,197,.06)',
@@ -59,26 +104,54 @@ export default function DoneScreen({ flowId, answers, onRestart, onHome }) {
             role="note"
             aria-label="Referans kodu"
           >
-            <span style={{ fontSize: 15, lineHeight: 1 }} aria-hidden="true">🔖</span>
-            <div>
-              <div style={{ fontSize: 10, fontFamily: 'var(--f-mono)', letterSpacing: '.18em', color: 'var(--t-3)', textTransform: 'uppercase', marginBottom: 3 }}>
-                Referans kodu
-              </div>
-              <div style={{ fontFamily: 'var(--f-mono)', fontSize: 15, fontWeight: 600, letterSpacing: '.12em', color: 'var(--cyan)' }}>
-                {refCode}
+            <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+              <span style={{ fontSize: 15, lineHeight: 1 }} aria-hidden="true">🔖</span>
+              <div>
+                <div style={{ fontSize: 10, fontFamily: 'var(--f-mono)', letterSpacing: '.18em', color: 'var(--t-3)', textTransform: 'uppercase', marginBottom: 3 }}>
+                  Referans kodu
+                </div>
+                <div style={{ fontFamily: 'var(--f-mono)', fontSize: 15, fontWeight: 600, letterSpacing: '.12em', color: 'var(--cyan)' }}>
+                  {refCode}
+                </div>
               </div>
             </div>
+            <button
+              onClick={handleCopy}
+              aria-label="Referans kodunu kopyala"
+              style={{
+                fontFamily: 'var(--f-mono)',
+                fontSize: 11,
+                letterSpacing: '.1em',
+                color: copied ? 'var(--green)' : 'var(--cyan)',
+                border: '1px solid',
+                borderColor: copied ? 'rgba(34,197,94,.35)' : 'rgba(52,229,197,.3)',
+                borderRadius: 7,
+                padding: '6px 11px',
+                background: 'none',
+                cursor: 'pointer',
+                whiteSpace: 'nowrap',
+                transition: 'color .2s, border-color .2s',
+              }}
+            >
+              {copied ? 'Kopyalandı ✓' : 'Kopyala'}
+            </button>
           </div>
         )}
 
-        {/* Özet kartı */}
-        <div className="summary-card" role="region" aria-label="Talep özeti">
-          {rows.map((r) => (
-            <div key={r.k} className="summary-row">
-              <div className="summary-k">{r.k}</div>
-              <div className="summary-v">{r.v}</div>
-            </div>
-          ))}
+        {/* Talep fişi — 3 blok */}
+        <div className="summary-card" role="region" aria-label="Talep fişi">
+          <div className="summary-row" style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            <div className="summary-k">Talep</div>
+            <div className="summary-v">{talepV}</div>
+          </div>
+          <div className="summary-row" style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            <div className="summary-k">Planlama</div>
+            <div className="summary-v">{planV}</div>
+          </div>
+          <div className="summary-row" style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+            <div className="summary-k">İletişim</div>
+            <div className="summary-v">{iletV}</div>
+          </div>
         </div>
 
         {/* CTA'lar */}
@@ -101,9 +174,19 @@ export default function DoneScreen({ flowId, answers, onRestart, onHome }) {
             + Yeni Talep
           </button>
           <button
-            className="btn-secondary"
             onClick={onHome}
             aria-label="Ana sayfaya dön"
+            style={{
+              display: 'block',
+              width: '100%',
+              textAlign: 'center',
+              padding: '8px',
+              fontSize: 13,
+              color: 'var(--t-3)',
+              background: 'none',
+              border: 'none',
+              cursor: 'pointer',
+            }}
           >
             Ana Sayfa
           </button>
