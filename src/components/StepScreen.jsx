@@ -38,13 +38,33 @@ function extractDigits(val) {
   return (val || '').replace(/\D/g, '');
 }
 
+// 0535 123 45 67 formatına dönüştürür (max 11 rakam)
+function formatPhone(raw) {
+  const d = extractDigits(raw).slice(0, 11);
+  if (d.length <= 4) return d;
+  if (d.length <= 7) return `${d.slice(0,4)} ${d.slice(4)}`;
+  if (d.length <= 9) return `${d.slice(0,4)} ${d.slice(4,7)} ${d.slice(7)}`;
+  return `${d.slice(0,4)} ${d.slice(4,7)} ${d.slice(7,9)} ${d.slice(9)}`;
+}
+
+// Türk GSM kuralı: 11 hane, '0' ile başlar, ikinci hane '5'
+function isValidTurkishMobile(digits) {
+  return digits.length === 11 && digits[0] === '0' && digits[1] === '5';
+}
+
 // ── İletişim formu ────────────────────────────────────────────────
 function ContactForm({ answers, onChange }) {
   const [telTouched, setTelTouched] = useState(false);
 
-  const digits    = extractDigits(answers.iletisim_tel);
-  const telError  = telTouched && digits.length > 0 && digits.length < 10;
-  const telBorder = telError ? 'rgba(248,113,113,.6)' : undefined;
+  const digits   = extractDigits(answers.iletisim_tel);
+  const hasInput = digits.length > 0;
+  const isValid  = isValidTurkishMobile(digits);
+  const telError = telTouched && hasInput && !isValid;
+
+  function handleTelChange(e) {
+    const formatted = formatPhone(e.target.value);
+    onChange('iletisim_tel', formatted);
+  }
 
   return (
     <div className="field-group">
@@ -69,9 +89,10 @@ function ContactForm({ answers, onChange }) {
           inputMode="numeric"
           autoComplete="tel"
           placeholder="05XX XXX XX XX"
-          style={telBorder ? { borderColor: telBorder } : undefined}
+          maxLength={14}
+          style={telError ? { borderColor: 'rgba(248,113,113,.65)' } : undefined}
           value={answers.iletisim_tel || ''}
-          onChange={(e) => onChange('iletisim_tel', e.target.value)}
+          onChange={handleTelChange}
           onBlur={() => setTelTouched(true)}
           aria-invalid={telError}
           aria-describedby={telError ? 'tel-error' : undefined}
@@ -82,7 +103,7 @@ function ContactForm({ answers, onChange }) {
             role="alert"
             style={{ fontSize: 12, color: 'var(--red)', marginTop: 6, lineHeight: 1.4 }}
           >
-            Geçerli telefon girin (en az 10 rakam)
+            Geçerli bir Türk cep numarası girin (05XX XXX XX XX)
           </p>
         )}
       </div>
@@ -93,7 +114,7 @@ function ContactForm({ answers, onChange }) {
   );
 }
 
-export { extractDigits };
+export { extractDigits, isValidTurkishMobile };
 
 // ── Konum seçimi ──────────────────────────────────────────────────
 function IlceSelect({ value, onChange }) {
@@ -159,10 +180,10 @@ export default function StepScreen({
   const pct = Math.round(((stepIndex + 1) / totalSteps) * 100);
 
   // İletişim adımında zorunlu alanlar dolu mu?
-  // Telefon: yalnızca rakam sayısı >= 10 kabul edilir (boşluk/tire/harf geçersiz)
+  // Telefon: 11 hane, 0 ile başlar, ikinci hane 5 (Türk GSM kuralı)
   const isContactValid =
     step.type !== 'contact' ||
-    (answers.iletisim_ad?.trim() && extractDigits(answers.iletisim_tel).length >= 10);
+    (answers.iletisim_ad?.trim() && isValidTurkishMobile(extractDigits(answers.iletisim_tel)));
 
   // İlçe veya mahalle seçiminde değer var mı?
   const hasLocationValue =
