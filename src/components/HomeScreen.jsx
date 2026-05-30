@@ -175,8 +175,8 @@ export default function HomeScreen({ onFlowStart }) {
         >
           <span className="home-card-ico" aria-hidden="true">💡</span>
           <div className="home-card-body">
-            <div className="home-card-title">Emin Değilim / Diğer</div>
-            <div className="home-card-sub">Uydu, kapı, alarm ve daha fazlası</div>
+            <div className="home-card-title">Diğer Hizmetler</div>
+            <div className="home-card-sub">Uydu, kapı, alarm ve farklı teknik işler</div>
           </div>
           <span
             className="home-card-arr"
@@ -215,7 +215,7 @@ export default function HomeScreen({ onFlowStart }) {
         >
           <span className="home-card-ico" aria-hidden="true">💬</span>
           <div className="home-card-body">
-            <div className="home-card-title">Emin değilsen WhatsApp'tan yaz</div>
+            <div className="home-card-title">Kararsızsan WhatsApp'tan yaz</div>
             <div className="home-card-sub">Talep oluşturmadan önce birlikte netleştirelim</div>
           </div>
           <span className="home-card-arr" aria-hidden="true">↗</span>
