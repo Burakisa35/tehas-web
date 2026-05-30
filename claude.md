@@ -17,7 +17,7 @@ React + Vite. Mobil öncelikli müşteri talep wizard uygulaması.
 ## Görev Kuralları
 1. Önce sadece ilgili dosyayı oku, tümünü değil.
 2. Minimal değişiklik yap.
-3. package-lock.json, node_modules, dist klasörlerine dokunma.f
+3. package-lock.json, node_modules, dist klasörlerine dokunma.
 ## Son Eklenen Özellikler
 - Teknisyen başvuru akışı: src/data/flows.js — BASVURU_FLOW (6 adım)
 - Başvuru bileşenleri: src/components/StepScreen.jsx — SplashStep, MultiChoiceList, BasvuruContactForm
