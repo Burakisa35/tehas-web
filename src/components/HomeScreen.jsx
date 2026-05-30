@@ -1,13 +1,19 @@
 import React from 'react';
 
-// ── 6 hizmet akışı ───────────────────────────────────────────────
+// ── 6 hizmet akışı (2x3 grid) ────────────────────────────────────
 const FLOWS = [
-  { id: 'elektrik',  label: 'Elektrik Arıza',    sub: 'Sigorta, priz, hat kontrolü',         ico: '⚡' },
-  { id: 'kamera',    label: 'Kamera Sistemi',     sub: 'Kurulum ve arıza kontrolü',            ico: '📷' },
-  { id: 'uydu',      label: 'Uydu / Anten',       sub: 'Çanak, multiswitch, anten',            ico: '📡' },
-  { id: 'ag',        label: 'İnternet / Network', sub: 'Kablo, switch, router, access point',  ico: '🌐' },
-  { id: 'otomasyon', label: 'Kapı / Kepenk',      sub: 'Otomatik kapı ve kepenk',              ico: '🚪' },
-  { id: 'alarm',     label: 'Alarm / Diyafon',    sub: 'Alarm, diyafon, kartlı geçiş',         ico: '🔔' },
+  { id: 'elektrik',  label: 'Enerji & Aydınlatma', sub: 'Priz, sigorta, pano, ışık',    ico: '⚡' },
+  { id: 'kamera',    label: 'Güvenlik & İzleme',    sub: 'Kamera, kayıt, mobil izleme',   ico: '📷' },
+  { id: 'uydu',      label: 'TV & Uydu',            sub: 'Çanak, sinyal, merkezi sistem', ico: '📡' },
+  { id: 'ag',        label: 'İnternet & Bağlantı',  sub: 'Wi-Fi, modem, kablo, ağ',       ico: '🌐' },
+  { id: 'otomasyon', label: 'Kapı & Geçiş',         sub: 'Kapı, kepenk, bariyer',         ico: '🚪' },
+  { id: 'alarm',     label: 'Giriş & Haberleşme',   sub: 'Alarm, diyafon, interkom',      ico: '🔔' },
+];
+
+// ── Tam genişlik işlem kartları ──────────────────────────────────
+const SECONDARY = [
+  { id: 'apartman', label: 'Apartman Bakımı Başvurusu', sub: 'Ortak alan, pano, kamera, kapı ve diyafon işleri', ico: '🏢' },
+  { id: 'basvuru',  label: 'Teknisyen Başvurusu',       sub: 'TEHAŞ ekibine katılmak için başvur',               ico: '🧑‍🔧' },
 ];
 
 export default function HomeScreen({ onFlowStart }) {
@@ -44,31 +50,21 @@ export default function HomeScreen({ onFlowStart }) {
 
       {/* Tam genişlik işlem kartları */}
       <div className="home-actions-secondary">
-        <button
-          className="home-card-action"
-          onClick={() => onFlowStart('apartman')}
-          aria-label="Apartman Bakımı Başvurusu"
-        >
-          <span style={{ fontSize: 26, lineHeight: 1, flexShrink: 0 }} aria-hidden="true">🏢</span>
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <div className="home-card-title">Apartman Bakımı Başvurusu</div>
-            <div className="home-card-sub">Ortak alan bakım ve teknik hizmet anlaşması</div>
-          </div>
-          <span style={{ color: 'var(--t-4)', fontSize: 18, flexShrink: 0 }} aria-hidden="true">›</span>
-        </button>
-
-        <button
-          className="home-card-action"
-          onClick={() => onFlowStart('basvuru')}
-          aria-label="Teknisyen Başvurusu"
-        >
-          <span style={{ fontSize: 26, lineHeight: 1, flexShrink: 0 }} aria-hidden="true">🧑‍🔧</span>
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <div className="home-card-title">Teknisyen Başvurusu</div>
-            <div className="home-card-sub">TEHAŞ ekibine katılmak için başvur</div>
-          </div>
-          <span style={{ color: 'var(--t-4)', fontSize: 18, flexShrink: 0 }} aria-hidden="true">›</span>
-        </button>
+        {SECONDARY.map((s) => (
+          <button
+            key={s.id}
+            className="home-card-action"
+            onClick={() => onFlowStart(s.id)}
+            aria-label={s.label}
+          >
+            <span style={{ fontSize: 26, lineHeight: 1, flexShrink: 0 }} aria-hidden="true">{s.ico}</span>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div className="home-card-title">{s.label}</div>
+              <div className="home-card-sub">{s.sub}</div>
+            </div>
+            <span style={{ color: 'var(--t-4)', fontSize: 18, flexShrink: 0 }} aria-hidden="true">›</span>
+          </button>
+        ))}
       </div>
     </div>
   );

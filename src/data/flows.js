@@ -54,7 +54,7 @@ export const ILETISIM_ADIMI = {
 // ── Elektrik akışı ────────────────────────────────────────────────
 export const ELEKTRIK_FLOW = {
   id: 'elektrik',
-  label: 'Elektrik',
+  label: 'Enerji & Aydınlatma',
   ico: '⚡',
   fiyatBadge: { text: '₺500\'den başlayan fiyatlarla', sub: 'Kesin fiyat keşif sonrası belirlenir' },
   steps: [
@@ -66,11 +66,66 @@ export const ELEKTRIK_FLOW = {
       type: 'choice',
       required: true,
       options: [
-        { value: 'montaj',      label: 'Montaj',           ico: '🔧', sub: 'Priz, anahtar, avize, spot, LED, şofben…' },
-        { value: 'ariza',       label: 'Arıza tamiri',     ico: '🔍', sub: 'Sigortadan kaçak akıma kadar her arıza' },
-        { value: 'tesisat',     label: 'Tesisat',          ico: '🏗️', sub: 'Daire, bina, inşaat, klima hattı' },
-        { value: 'hat_cekme',   label: 'Hat çekme',        ico: '📐', sub: 'Priz, klima, internet, topraklama hattı' },
-        { value: 'diger',       label: 'Diğer / Emin değilim', ico: '💡', sub: 'WhatsApp\'tan birlikte belirleriz' },
+        { value: 'ariza',     label: 'Elektrik arızası',              ico: '⚡', sub: 'Kesinti, sigortadan kaçak akıma' },
+        { value: 'sigorta',   label: 'Sigorta / kaçak akım',          ico: '⚙️', sub: 'Sigorta atıyor, kaçak akım var' },
+        { value: 'montaj',    label: 'Priz / anahtar / lamba',        ico: '🔧', sub: 'Montaj ve değişim işleri' },
+        { value: 'pano',      label: 'Pano kontrolü',                  ico: '🗄️', sub: 'Pano düzeni, kompanzasyon' },
+        { value: 'tesisat',   label: 'Hat çekimi / tesisat',           ico: '🏗️', sub: 'Daire, bina, inşaat, klima hattı' },
+        { value: 'dis_mekan', label: 'Dış mekan / bahçe elektriği',   ico: '🌿', sub: 'Dış priz, bahçe aydınlatma, sulama' },
+        { value: 'ev_sarj',   label: 'EV şarj altyapısı',             ico: '🔌', sub: 'Wallbox hat, sigorta, kaçak akım' },
+        { value: 'akilli_ev', label: 'Akıllı ev / otomasyon desteği', ico: '🏠', sub: 'Akıllı anahtar, röle, priz kurulumu' },
+        { value: 'solar_on',  label: 'Solar / enerji ön keşfi',        ico: '☀️', sub: 'Ön kontrol ve partner yönlendirme' },
+        { value: 'diger',     label: 'Emin değilim',                   ico: '💬', sub: 'WhatsApp\'tan birlikte belirleriz' },
+      ],
+    },
+    // Yer tipi — her zaman
+    {
+      id: 'elektrik_yer',
+      label: 'Yer tipi',
+      title: 'Nerede uygulanacak?',
+      subtitle: null,
+      type: 'choice',
+      required: true,
+      options: [
+        { value: 'konut',    label: 'Konut / Daire',       ico: '🏠' },
+        { value: 'villa',    label: 'Villa / Müstakil',    ico: '🏡' },
+        { value: 'apartman', label: 'Apartman ortak alan', ico: '🏢' },
+        { value: 'isyeri',   label: 'İşletme / Ofis',      ico: '🏪' },
+        { value: 'depo',     label: 'Depo / Atölye',       ico: '🏭' },
+        { value: 'dis',      label: 'Dış mekan / Bahçe',   ico: '🌿' },
+      ],
+    },
+    // Risk — arıza / sigorta / pano
+    {
+      id: 'elektrik_risk',
+      label: 'Risk',
+      title: 'Aşağıdakilerden herhangi biri var mı?',
+      subtitle: 'Varsa işaretleyin — öncelik sıralaması için önemli.',
+      type: 'multi-choice',
+      required: false,
+      skipLabel: 'Hiçbiri yok',
+      condition: (a) => ['ariza', 'sigorta', 'pano'].includes(a.elektrik_is_tipi),
+      options: [
+        { value: 'koku',     label: 'Yanık kokusu',           ico: '👃' },
+        { value: 'kivircim', label: 'Kıvılcım / erime',       ico: '⚠️' },
+        { value: 'surekli',  label: 'Sigorta sürekli atıyor', ico: '🔁' },
+        { value: 'su',       label: 'Su teması var',           ico: '💧' },
+        { value: 'isinma',   label: 'Pano / kablo ısınıyor',  ico: '🌡️' },
+      ],
+    },
+    // EV şarj tipi
+    {
+      id: 'ev_sarj_tip',
+      label: 'Şarj tipi',
+      title: 'EV şarj altyapısı nerede kurulacak?',
+      subtitle: null,
+      type: 'choice',
+      required: true,
+      condition: (a) => a.elektrik_is_tipi === 'ev_sarj',
+      options: [
+        { value: 'konut',    label: 'Müstakil ev / villa', ico: '🏡', sub: 'Kendi garajı var' },
+        { value: 'apartman', label: 'Apartman otoparkı',   ico: '🏢', sub: 'Yönetim izni gerekebilir' },
+        { value: 'isyeri',   label: 'İşletme / ticari',    ico: '🏪', sub: 'Birden fazla şarj noktası' },
       ],
     },
     // Arıza → belirti
@@ -201,7 +256,7 @@ export const ELEKTRIK_FLOW = {
 // ── Kamera akışı ──────────────────────────────────────────────────
 export const KAMERA_FLOW = {
   id: 'kamera',
-  label: 'Kamera',
+  label: 'Güvenlik & İzleme',
   ico: '📷',
   fiyatBadge: { text: 'Kamera adedine göre teklif', sub: 'Hikvision Partner Pro sertifikalı kurulum' },
   steps: [
@@ -213,33 +268,55 @@ export const KAMERA_FLOW = {
       type: 'choice',
       required: true,
       options: [
-        { value: 'yeni_sistem',  label: 'Yeni kamera sistemi',         ico: '🆕', sub: 'Kamera, kayıt cihazı ve kurulum' },
-        { value: 'ek_kamera',    label: 'Mevcut sisteme kamera ekleme',ico: '➕', sub: 'Mevcut DVR/NVR kapasitesi var' },
-        { value: 'sadece_montaj',label: 'Sadece montaj (ürün bende)',  ico: '🔧', sub: 'Kamera ve cihaz hazır, kurulum lazım' },
-        { value: 'sokum_takma',  label: 'Söküp tekrar takma',         ico: '🔄', sub: 'Taşınma, tadilat sonrası yeniden kurulum' },
-        { value: 'ariza',        label: 'Kamera sistemi arızalı',      ico: '🔍', sub: 'Görüntü yok, kayıt durdu, vb.' },
-        { value: 'izleme_sorun', label: 'Telefondan izleme sorunu',    ico: '📱', sub: 'Uygulama, şifre, erişim problemi' },
-        { value: 'kayit_sorun',  label: 'Kayıt / DVR / NVR sorunu',   ico: '💾', sub: 'Kayıt olmuyor, disk dolu, vb.' },
-        { value: 'diger',        label: 'Diğer / Emin değilim',       ico: '💬', sub: 'Konuşarak netleştirelim' },
+        { value: 'yeni_sistem',     label: 'Yeni kamera kurulumu',          ico: '📷', sub: 'Sıfırdan sistem kurulumu' },
+        { value: 'ariza',           label: 'Mevcut kamera arızası',          ico: '🔍', sub: 'Görüntü yok, kopuk, donuyor' },
+        { value: 'kayit_sorun',     label: 'Kayıt cihazı / HDD sorunu',     ico: '💾', sub: 'DVR/NVR, kayıt yok, disk dolu' },
+        { value: 'izleme_sorun',    label: 'Mobil izleme / Hik-Connect',    ico: '📱', sub: 'Telefonda açılmıyor, offline' },
+        { value: 'ilk_denetim',     label: 'Kamera ilk denetim',            ico: '🔎', sub: 'Mevcut sistemi kontrol ettir' },
+        { value: 'bakim',           label: 'Kamera bakım / sistem sağlığı', ico: '🛠️', sub: 'Periyodik kontrol ve bakım' },
+        { value: 'apartman_kamera', label: 'Apartman / site kamera',        ico: '🏢', sub: 'Ortak alan, giriş, otopark' },
+        { value: 'isyeri_kamera',   label: 'İşyeri / fabrika kamera',       ico: '🏭', sub: 'Dükkan, depo, OSB' },
+        { value: 'villa_kamera',    label: 'Villa güvenlik sistemi',         ico: '🏡', sub: 'Kamera + alarm + interkom' },
+        { value: 'solar_4g',        label: 'Solar / 4G kamera',             ico: '☀️', sub: 'Elektrik/internet olmayan alan' },
+        { value: 'entegrasyon',     label: 'Kamera + alarm + interkom',     ico: '🔗', sub: 'Hikvision ekosistem kurulumu' },
+        { value: 'diger',           label: 'Emin değilim',                   ico: '💬', sub: '' },
       ],
     },
-    // Adet (yeni / ek / montaj için)
+    // Sistem tipi
+    {
+      id: 'kamera_sistem_tipi',
+      label: 'Sistem tipi',
+      title: 'Kamera sistem tipi nedir?',
+      subtitle: 'Bilmiyorsanız sorun değil — fotoğrafla tespit edilir.',
+      type: 'choice',
+      required: false,
+      skipLabel: 'Bilmiyorum',
+      condition: (a) => ['yeni_sistem','ariza','kayit_sorun','ilk_denetim','bakim','apartman_kamera','isyeri_kamera','villa_kamera','entegrasyon'].includes(a.kamera_is_tipi),
+      options: [
+        { value: 'ahd',       label: 'AHD / Analog',  ico: '📺', sub: 'Coax kablo, DVR' },
+        { value: 'ip_poe',    label: 'IP / PoE',       ico: '🌐', sub: 'Cat6 kablo, NVR, PoE switch' },
+        { value: 'wifi',      label: 'Wi-Fi kamera',   ico: '📶', sub: 'Kablosuz, modem bağlantılı' },
+        { value: 'solar_tip', label: 'Solar / 4G',     ico: '☀️', sub: 'Güneş panelli, SIM kartlı' },
+        { value: 'bilmiyorum',label: 'Bilmiyorum',     ico: '❓', sub: '' },
+      ],
+    },
+    // Kamera sayısı
     {
       id: 'kamera_adet',
-      label: 'Kamera adedi',
-      title: 'Kaç kamera olacak?',
-      subtitle: '4, 8, 16 kanal eşikleri fiyatı ve cihaz seçimini etkiler.',
+      label: 'Kamera sayısı',
+      title: 'Kaç kamera?',
+      subtitle: null,
       type: 'choice-grid',
       required: false,
-      skipLabel: 'Emin değilim',
-      condition: (a) => ['yeni_sistem', 'ek_kamera', 'sadece_montaj'].includes(a.kamera_is_tipi),
+      skipLabel: 'Bilmiyorum',
+      condition: (a) => ['yeni_sistem','apartman_kamera','isyeri_kamera','villa_kamera','entegrasyon','solar_4g'].includes(a.kamera_is_tipi),
       options: [
-        { value: '1',    label: '1 kamera',   ico: '1️⃣' },
-        { value: '2',    label: '2 kamera',   ico: '2️⃣' },
-        { value: '3-4',  label: '3-4 kamera', ico: '3️⃣' },
-        { value: '5-8',  label: '5-8 kamera', ico: '4️⃣' },
-        { value: '9-16', label: '9-16 kamera',ico: '5️⃣' },
-        { value: '20+',  label: '20+ kamera', ico: '6️⃣' },
+        { value: '1-2',   label: '1–2',   ico: '①' },
+        { value: '3-4',   label: '3–4',   ico: '②' },
+        { value: '5-8',   label: '5–8',   ico: '③' },
+        { value: '9-16',  label: '9–16',  ico: '④' },
+        { value: '17-32', label: '17–32', ico: '⑤' },
+        { value: '32+',   label: '32+',   ico: '⑥' },
       ],
     },
     // Kurulum yeri
@@ -281,7 +358,7 @@ export const KAMERA_FLOW = {
 // ── Uydu / Anten akışı ────────────────────────────────────────────
 export const UYDU_FLOW = {
   id: 'uydu',
-  label: 'Uydu / Anten',
+  label: 'TV & Uydu',
   ico: '📡',
   fiyatBadge: { text: '₺800\'den başlayan fiyatlarla', sub: 'Çanak, anten ve multiswitch kurulumu' },
   steps: [
@@ -310,7 +387,7 @@ export const UYDU_FLOW = {
 // ── Ağ altyapısı akışı ────────────────────────────────────────────
 export const AG_FLOW = {
   id: 'ag',
-  label: 'Ağ / İnternet',
+  label: 'İnternet & Bağlantı',
   ico: '🌐',
   fiyatBadge: { text: 'Keşif sonrası fiyatlandırma', sub: 'Kablo mesafesine ve ekipmana göre değişir' },
   steps: [
@@ -375,7 +452,7 @@ export const AG_FLOW = {
 // ── Kapı otomasyonu akışı ─────────────────────────────────────────
 export const OTOMASYON_FLOW = {
   id: 'otomasyon',
-  label: 'Kapı / Kepenk',
+  label: 'Kapı & Geçiş',
   ico: '🚪',
   fiyatBadge: { text: 'Keşif sonrası fiyatlandırma', sub: 'Marka ve modele göre değişir' },
   steps: [
@@ -402,7 +479,7 @@ export const OTOMASYON_FLOW = {
 // ── Alarm / Diyafon / Kartlı geçiş akışı ─────────────────────────
 export const ALARM_FLOW = {
   id: 'alarm',
-  label: 'Alarm / Diyafon',
+  label: 'Giriş & Haberleşme',
   ico: '🔔',
   fiyatBadge: { text: 'Keşif sonrası fiyatlandırma', sub: 'Sistem kapsamına göre belirlenir' },
   steps: [
@@ -414,10 +491,14 @@ export const ALARM_FLOW = {
       type: 'choice',
       required: true,
       options: [
-        { value: 'yeni',      label: 'Yeni sistem kurulumu',     ico: '🆕', sub: 'Alarm, diyafon veya kartlı geçiş' },
-        { value: 'ariza',     label: 'Mevcut sistem arızalı',    ico: '🔍', sub: 'Alarm çalışmıyor, diyafon sorunlu' },
-        { value: 'panel',     label: 'Panel / sensör değişimi',  ico: '🔧', sub: 'Parça değişimi veya güncelleme' },
-        { value: 'diger',     label: 'Diğer / Emin değilim',    ico: '💬', sub: '' },
+        { value: 'yeni',         label: 'Yeni sistem kurulumu',      ico: '🆕', sub: 'Alarm, diyafon veya kartlı geçiş' },
+        { value: 'ariza',        label: 'Mevcut sistem arızalı',     ico: '🔍', sub: 'Alarm çalışmıyor, diyafon sorunlu' },
+        { value: 'panel',        label: 'Panel / sensör değişimi',   ico: '🔧', sub: 'Parça değişimi veya güncelleme' },
+        { value: 'interkom',     label: 'Video interkom / diyafon',  ico: '📞', sub: 'Görüntülü kapı, zil sistemi' },
+        { value: 'ax_pro',       label: 'Hikvision AX Pro alarm',    ico: '🛡️', sub: 'Kablosuz alarm sistemi' },
+        { value: 'kartli_gecis', label: 'Kartlı geçiş sistemi',      ico: '💳', sub: 'Kapı kontrol, kart okuyucu' },
+        { value: 'entegrasyon',  label: 'Alarm + kamera + interkom', ico: '🔗', sub: 'Hikvision ekosistem entegrasyonu' },
+        { value: 'diger',        label: 'Diğer / Emin değilim',     ico: '💬', sub: '' },
       ],
     },
     ILETISIM_ADIMI,
@@ -655,6 +736,142 @@ export const APARTMAN_FLOW = {
   ],
 };
 
+// ── Akıllı Ev / Otomasyon Akışı ──────────────────────────────────
+export const AKILLI_EV_FLOW = {
+  id: 'akilli_ev',
+  label: 'Akıllı Ev / Otomasyon',
+  ico: '🏠',
+  fiyatBadge: { text: 'Keşif sonrası net teklif', sub: 'Cihaz ve nokta sayısına göre belirlenir' },
+  steps: [
+    {
+      id: 'akilli_ev_is_tipi',
+      label: 'İş tipi',
+      title: 'Akıllı ev tarafında neye ihtiyacınız var?',
+      subtitle: null,
+      type: 'choice',
+      required: true,
+      options: [
+        { value: 'anahtar_role', label: 'Akıllı anahtar / röle',        ico: '💡', sub: 'Shelly, Sonoff, Tuya kurulumu' },
+        { value: 'priz',         label: 'Akıllı priz / enerji kontrol', ico: '🔌', sub: 'Uzaktan açma/kapama, ölçüm' },
+        { value: 'aydinlatma',   label: 'Akıllı aydınlatma',            ico: '🌟', sub: 'Dimmer, sahne, renk kontrolü' },
+        { value: 'kapi_garaj',   label: 'Kapı / garaj kontrolü',        ico: '🚗', sub: 'Otomatik kapı, röle entegrasyonu' },
+        { value: 'bahce_sulama', label: 'Bahçe / sulama otomasyonu',    ico: '🌿', sub: 'Zamanlayıcı ve uzaktan kontrol' },
+        { value: 'hub_network',  label: 'Hub / Wi-Fi / Zigbee altyapı', ico: '📶', sub: 'Merkezi kontrol altyapısı' },
+        { value: 'kurulum',      label: 'Aldığım cihazı kurdur',        ico: '🛠️', sub: 'Ürün hazır, kurulum ve ayar' },
+        { value: 'kesif',        label: 'Keşif / uygunluk kontrolü',    ico: '🔎', sub: 'Nötr hattı, Wi-Fi, kablolama kontrolü' },
+        { value: 'diger',        label: 'Emin değilim',                  ico: '💬', sub: '' },
+      ],
+    },
+    {
+      id: 'akilli_ev_yer',
+      label: 'Yapı tipi',
+      title: 'Nerede uygulanacak?',
+      subtitle: null,
+      type: 'choice',
+      required: true,
+      options: [
+        { value: 'daire',  label: 'Daire',           ico: '🏠' },
+        { value: 'villa',  label: 'Villa',           ico: '🏡' },
+        { value: 'isyeri', label: 'Ofis / dükkan',   ico: '🏪' },
+        { value: 'site',   label: 'Apartman / site', ico: '🏢' },
+      ],
+    },
+    {
+      id: 'akilli_ev_nokta',
+      label: 'Nokta sayısı',
+      title: 'Kaç nokta akıllandırılacak?',
+      subtitle: null,
+      type: 'choice-grid',
+      required: false,
+      skipLabel: 'Bilmiyorum',
+      options: [
+        { value: '1',    label: '1 nokta',    ico: '①' },
+        { value: '2-3',  label: '2–3 nokta',  ico: '②' },
+        { value: '4-6',  label: '4–6 nokta',  ico: '③' },
+        { value: '7-10', label: '7–10 nokta', ico: '④' },
+        { value: '10+',  label: '10+ nokta',  ico: '⑤' },
+      ],
+    },
+    {
+      id: 'akilli_ev_cihaz',
+      label: 'Cihaz durumu',
+      title: 'Cihaz alındı mı?',
+      subtitle: null,
+      type: 'choice',
+      required: false,
+      skipLabel: 'Atla',
+      options: [
+        { value: 'shelly',      label: 'Evet — Shelly',          ico: '✅' },
+        { value: 'sonoff',      label: 'Evet — Sonoff',          ico: '✅' },
+        { value: 'tuya',        label: 'Evet — Tuya / Xiaomi',   ico: '✅' },
+        { value: 'diger_marka', label: 'Evet — Başka marka',     ico: '✅' },
+        { value: 'yok',         label: 'Hayır, öneri istiyorum', ico: '❓' },
+      ],
+    },
+    ILETISIM_ADIMI,
+    ...KONUM_ADIMLARI,
+    ZAMAN_ADIMI,
+  ],
+};
+
+// ── Solar & Enerji Altyapısı Akışı ───────────────────────────────
+export const SOLAR_FLOW = {
+  id: 'solar',
+  label: 'Solar & Enerji Altyapısı',
+  ico: '☀️',
+  fiyatBadge: { text: 'Keşif ve uygunluk sonrası teklif', sub: 'Ana EPC değil — altyapı ve bakım desteği' },
+  steps: [
+    {
+      id: 'solar_is_tipi',
+      label: 'İş tipi',
+      title: 'Solar veya enerji altyapısı tarafında neye ihtiyacınız var?',
+      subtitle: null,
+      type: 'choice',
+      required: true,
+      options: [
+        { value: 'on_kesif',    label: 'Solar uygunluk ön keşfi',        ico: '🔎', sub: 'Pano, çatı, tüketim kontrolü' },
+        { value: 'ariza_bakim', label: 'Mevcut GES arıza / bakım',       ico: '🛠️', sub: 'İnverter, pano, bağlantı, üretim' },
+        { value: 'altyapi',     label: 'Pano / kablo / koruma desteği',  ico: '⚡', sub: 'EPC firmasına alt yüklenici' },
+        { value: 'off_grid',    label: 'Küçük off-grid / villa sistemi', ico: '🏡', sub: 'Kamera, bahçe, modem beslemesi' },
+        { value: 'diger',       label: 'Emin değilim',                    ico: '💬', sub: '' },
+      ],
+    },
+    {
+      id: 'solar_durum',
+      label: 'Sistem durumu',
+      title: 'Mevcut solar sistem var mı?',
+      subtitle: null,
+      type: 'choice',
+      required: true,
+      options: [
+        { value: 'yok',     label: 'Hayır, sıfırdan başlıyorum',   ico: '🆕' },
+        { value: 'var',     label: 'Evet, kurulu sistem var',      ico: '✅' },
+        { value: 'teklif',  label: 'Teklif aldım / malzeme aldım', ico: '📋' },
+        { value: 'partner', label: 'Solar firma yönlendirdi',      ico: '🤝' },
+      ],
+    },
+    {
+      id: 'solar_yapi',
+      label: 'Yapı tipi',
+      title: 'Yapı tipi nedir?',
+      subtitle: null,
+      type: 'choice',
+      required: false,
+      skipLabel: 'Atla',
+      options: [
+        { value: 'konut',  label: 'Konut / Daire', ico: '🏠' },
+        { value: 'villa',  label: 'Villa',         ico: '🏡' },
+        { value: 'isyeri', label: 'İşletme',       ico: '🏪' },
+        { value: 'osb',    label: 'OSB / Fabrika', ico: '🏭' },
+        { value: 'tarim',  label: 'Tarım / Arazi', ico: '🌾' },
+      ],
+    },
+    ILETISIM_ADIMI,
+    ...KONUM_ADIMLARI,
+    ZAMAN_ADIMI,
+  ],
+};
+
 export const FLOWS = {
   elektrik:  ELEKTRIK_FLOW,
   kamera:    KAMERA_FLOW,
@@ -664,6 +881,8 @@ export const FLOWS = {
   alarm:     ALARM_FLOW,
   basvuru:   BASVURU_FLOW,
   apartman:  APARTMAN_FLOW,
+  akilli_ev: AKILLI_EV_FLOW,
+  solar:     SOLAR_FLOW,
 };
 
 export default FLOWS;

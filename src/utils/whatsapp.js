@@ -12,6 +12,39 @@ const IS_TIPI_LABELS = {
   kablo: 'Kablo çekme', switch: 'Switch/Router kurulumu', ap: 'Access point/mesh',
   yeni: 'Yeni sistem kurulumu', kumanda: 'Kumanda/panel değişimi',
   panel: 'Panel/sensör değişimi',
+  // Elektrik yeni
+  sigorta:      'Sigorta / Kaçak akım',
+  pano:         'Pano kontrolü',
+  dis_mekan:    'Dış mekan / Bahçe elektriği',
+  ev_sarj:      'EV şarj altyapısı',
+  solar_on:     'Solar ön keşfi',
+  akilli_ev:    'Akıllı ev / otomasyon desteği',
+  // Kamera yeni
+  ilk_denetim:      'Kamera ilk denetim',
+  bakim:            'Kamera bakım',
+  apartman_kamera:  'Apartman / Site kamera sistemi',
+  isyeri_kamera:    'İşyeri / Fabrika kamera sistemi',
+  villa_kamera:     'Villa güvenlik sistemi',
+  solar_4g:         'Solar / 4G kamera',
+  entegrasyon:      'Kamera + Alarm + İnterkom entegrasyonu',
+  // Alarm yeni
+  interkom:         'Video interkom / Diyafon',
+  ax_pro:           'Hikvision AX Pro alarm',
+  kartli_gecis:     'Kartlı geçiş sistemi',
+  // Akıllı ev
+  anahtar_role:  'Akıllı anahtar / röle',
+  priz:          'Akıllı priz',
+  aydinlatma:    'Akıllı aydınlatma',
+  kapi_garaj:    'Kapı / garaj kontrolü',
+  bahce_sulama:  'Bahçe / sulama otomasyonu',
+  hub_network:   'Hub / Wi-Fi altyapı',
+  kurulum:       'Cihaz kurulumu',
+  kesif:         'Keşif / uygunluk kontrolü',
+  // Solar
+  on_kesif:      'Solar uygunluk ön keşfi',
+  ariza_bakim:   'Mevcut GES arıza / bakım',
+  altyapi:       'Pano / kablo / koruma desteği',
+  off_grid:      'Küçük off-grid sistem',
 };
 
 const URUN_LABELS = {
@@ -48,6 +81,9 @@ const HIZMET_LABELS = {
   uydu: 'Uydu / Anten', ag: 'Ağ / İnternet',
   otomasyon: 'Kapı / Kepenk Otomasyonu', alarm: 'Alarm / Diyafon',
   basvuru: 'Teknisyen Başvurusu',
+  apartman: 'Apartman Bakımı',
+  akilli_ev: 'Akıllı Ev / Otomasyon',
+  solar:     'Solar & Enerji Altyapısı',
 };
 
 function label(map, val) {
@@ -106,6 +142,42 @@ export function buildWaMessage(flowId, answers, refCode) {
       lines.push(`Çalışmak istediği ilçe: ${answers.ilce}`);
     if (answers.basvuru_deneyim)
       lines.push(`Deneyim: ${answers.basvuru_deneyim}`);
+  }
+
+  // Apartman
+  if (flowId === 'apartman') {
+    if (answers.basvuran_sifati)   lines.push(`Başvuran: ${answers.basvuran_sifati}`);
+    if (answers.yapi_tipi)         lines.push(`Yapı tipi: ${answers.yapi_tipi}`);
+    if (answers.bolum_sayisi)      lines.push(`Bağımsız bölüm: ${answers.bolum_sayisi}`);
+    if (answers.anlasma_modeli)    lines.push(`Anlaşma modeli: ${answers.anlasma_modeli}`);
+    if (answers.sistemler?.length) lines.push(`Sistemler: ${answers.sistemler.join(', ')}`);
+    if (answers.talep_turu)        lines.push(`Talep türü: ${answers.talep_turu}`);
+    if (answers.adres_bolge)       lines.push(`Bölge: ${answers.adres_bolge}`);
+  }
+
+  // Akıllı ev
+  if (flowId === 'akilli_ev') {
+    if (answers.akilli_ev_yer)   lines.push(`Yapı tipi: ${answers.akilli_ev_yer}`);
+    if (answers.akilli_ev_nokta) lines.push(`Nokta sayısı: ${answers.akilli_ev_nokta}`);
+    if (answers.akilli_ev_cihaz) lines.push(`Cihaz: ${answers.akilli_ev_cihaz}`);
+  }
+
+  // Solar
+  if (flowId === 'solar') {
+    if (answers.solar_durum) lines.push(`Sistem durumu: ${answers.solar_durum}`);
+    if (answers.solar_yapi)  lines.push(`Yapı tipi: ${answers.solar_yapi}`);
+  }
+
+  // Elektrik yeni alanlar
+  if (flowId === 'elektrik') {
+    if (answers.elektrik_yer)          lines.push(`Yer tipi: ${answers.elektrik_yer}`);
+    if (answers.elektrik_risk?.length) lines.push(`Risk: ${answers.elektrik_risk.join(', ')}`);
+    if (answers.ev_sarj_tip)           lines.push(`Şarj tipi: ${answers.ev_sarj_tip}`);
+  }
+
+  // Kamera sistem tipi
+  if (flowId === 'kamera') {
+    if (answers.kamera_sistem_tipi) lines.push(`Sistem tipi: ${answers.kamera_sistem_tipi}`);
   }
 
   // Kamera özeli
@@ -177,6 +249,12 @@ export function buildSummaryRows(flowId, answers) {
   }
 
   if (flowId === 'elektrik') {
+    if (answers.elektrik_yer)
+      rows.push({ k: 'Yer tipi', v: answers.elektrik_yer });
+    if (answers.elektrik_risk?.length)
+      rows.push({ k: 'Risk', v: answers.elektrik_risk.join(', ') });
+    if (answers.ev_sarj_tip)
+      rows.push({ k: 'Şarj tipi', v: answers.ev_sarj_tip });
     if (answers.elektrik_urun)
       rows.push({ k: 'Ürün', v: label(URUN_LABELS, answers.elektrik_urun) });
     if (answers.elektrik_adet)
@@ -190,6 +268,8 @@ export function buildSummaryRows(flowId, answers) {
   }
 
   if (flowId === 'kamera') {
+    if (answers.kamera_sistem_tipi)
+      rows.push({ k: 'Sistem tipi', v: answers.kamera_sistem_tipi });
     if (answers.kamera_adet)
       rows.push({ k: 'Kamera adedi', v: answers.kamera_adet });
     if (answers.kamera_yer)
@@ -198,6 +278,27 @@ export function buildSummaryRows(flowId, answers) {
       rows.push({ k: 'Detay', v: answers.kamera_not });
     if (answers.kamera_detay)
       rows.push({ k: 'Mevcut Sistem', v: answers.kamera_detay });
+  }
+
+  if (flowId === 'apartman') {
+    if (answers.basvuran_sifati)   rows.push({ k: 'Başvuran', v: answers.basvuran_sifati });
+    if (answers.yapi_tipi)         rows.push({ k: 'Yapı tipi', v: answers.yapi_tipi });
+    if (answers.bolum_sayisi)      rows.push({ k: 'Bölüm', v: answers.bolum_sayisi });
+    if (answers.anlasma_modeli)    rows.push({ k: 'Model', v: answers.anlasma_modeli });
+    if (answers.sistemler?.length) rows.push({ k: 'Sistemler', v: answers.sistemler.join(', ') });
+    if (answers.talep_turu)        rows.push({ k: 'Talep türü', v: answers.talep_turu });
+    if (answers.adres_bolge)       rows.push({ k: 'Bölge', v: answers.adres_bolge });
+  }
+
+  if (flowId === 'akilli_ev') {
+    if (answers.akilli_ev_yer)   rows.push({ k: 'Yapı tipi', v: answers.akilli_ev_yer });
+    if (answers.akilli_ev_nokta) rows.push({ k: 'Nokta', v: answers.akilli_ev_nokta });
+    if (answers.akilli_ev_cihaz) rows.push({ k: 'Cihaz', v: answers.akilli_ev_cihaz });
+  }
+
+  if (flowId === 'solar') {
+    if (answers.solar_durum) rows.push({ k: 'Sistem durumu', v: answers.solar_durum });
+    if (answers.solar_yapi)  rows.push({ k: 'Yapı tipi', v: answers.solar_yapi });
   }
 
   if (answers.ilce) {
