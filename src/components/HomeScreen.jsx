@@ -144,8 +144,8 @@ export default function HomeScreen({ onFlowStart }) {
         </a>
       </header>
 
-      {/* Hero */}
-      <section className="home-hero">
+      {/* Hero — kompakt */}
+      <section className="home-hero" style={{ padding: '20px 22px 12px' }}>
         <div className="home-badge">
           <span className="home-badge-dot" />
           Kemalpaşa ve çevresi
@@ -153,41 +153,33 @@ export default function HomeScreen({ onFlowStart }) {
         <h1 className="home-h">
           Ne yapmamızı<br />istersiniz?
         </h1>
-        <p className="home-p">
-          3-5 adımda talebinizi oluşturun,<br />
-          WhatsApp üzerinden bağlanalım.
-        </p>
       </section>
 
       {/* ── Grup 1: Ne konuda destek istiyorsunuz? ── */}
       <GrupBaslik>Ne konuda destek istiyorsunuz?</GrupBaslik>
       <nav className="home-actions" aria-label="Teknik destek hizmetleri">
-        {DESTEK_KARTLARI.map((f) => (
-          <Kart key={f.id} {...f} onClick={() => onFlowStart(f.id)} />
-        ))}
+        {/* 2 sütunlu grid — hizmet kartları */}
+        <div className="home-card-grid">
+          {DESTEK_KARTLARI.map((f) => (
+            <Kart key={f.id} {...f} onClick={() => onFlowStart(f.id)} />
+          ))}
 
-        {/* Emin Değilim — ikinci katmanı açar/kapatır */}
-        <button
-          className="home-card"
-          onClick={() => setShowDetay((v) => !v)}
-          aria-expanded={showDetay}
-          aria-label="Emin Değilim / Diğer Teknik Destek"
-        >
-          <span className="home-card-ico" aria-hidden="true">💡</span>
-          <div className="home-card-body">
-            <div className="home-card-title">Diğer Hizmetler</div>
-            <div className="home-card-sub">Uydu, kapı, alarm ve farklı teknik işler</div>
-          </div>
-          <span
-            className="home-card-arr"
-            aria-hidden="true"
-            style={{ transition: 'transform .2s', transform: showDetay ? 'rotate(90deg)' : 'none' }}
+          {/* Emin Değilim — ikinci katmanı açar/kapatır */}
+          <button
+            className="home-card"
+            onClick={() => setShowDetay((v) => !v)}
+            aria-expanded={showDetay}
+            aria-label="Emin Değilim / Diğer Teknik Destek"
           >
-            ›
-          </span>
-        </button>
+            <span className="home-card-ico" aria-hidden="true">💡</span>
+            <div className="home-card-body">
+              <div className="home-card-title">Diğer Hizmetler</div>
+              <div className="home-card-sub">Uydu, kapı, alarm ve farklı teknik işler</div>
+            </div>
+          </button>
+        </div>
 
-        {/* İkinci katman — uydu / otomasyon / alarm */}
+        {/* İkinci katman — uydu / otomasyon / alarm (grid dışında tam genişlik) */}
         {showDetay && (
           <div
             style={{

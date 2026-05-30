@@ -563,7 +563,35 @@ ul, ol { list-style: none; }
 
 /* ── Home screen ──────────────────────────────────────────── */
 .home-hero {
-  padding: 36px 22px 24px;
+  padding: 36px 22px 24px; /* inline override ile kompakt moda geçilir */
+}
+
+/* ── 2 sütunlu hizmet kartı grid'i ───────────────────────── */
+.home-card-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+/* Grid içindeki kartlar: dikey düzen, kompakt */
+.home-card-grid .home-card {
+  flex-direction: column;
+  align-items: flex-start;
+  padding: 14px 12px;
+  gap: 6px;
+}
+
+.home-card-grid .home-card-ico {
+  font-size: 22px;
+}
+
+.home-card-grid .home-card-sub {
+  font-size: 11px;
+}
+
+/* Grid kartlarında ok oku gizle (dikey düzende anlamsız) */
+.home-card-grid .home-card-arr {
+  display: none;
 }
 
 .home-eye {
