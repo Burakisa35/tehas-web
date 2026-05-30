@@ -208,8 +208,9 @@ export default function DoneScreen({ flowId, answers, onRestart, onHome }) {
             Sonraki adım
           </div>
           <div style={{ fontSize: 13, color: 'var(--t-2)', lineHeight: 1.6 }}>
-            Aşağıdaki butona basarak özeti WhatsApp'a gönderin.
-            Ekibimiz en kısa sürede dönüş yapar.
+            {answers.zaman === 'acil'
+              ? 'Talep acil olarak işaretlendi. Uygunluk durumuna göre en kısa sürede dönüş yapılır.'
+              : 'Talebiniz WhatsApp\'a aktarılmaya hazır. Gerekirse fotoğraf veya kısa bilgiyle ön değerlendirme netleştirilir.'}
           </div>
         </div>
 

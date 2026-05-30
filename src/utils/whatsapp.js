@@ -125,8 +125,31 @@ const KOLAY_KAMERA_IHTIYAC_LABELS = {
 };
 
 const KOLAY_ELEKTRIK_SORUN_LABELS = {
-  ariza: 'Arıza / Kesinti', montaj: 'Montaj / Değişim', tesisat: 'Hat / Tesisat',
-  pano: 'Pano / Sigorta', dis_alan: 'Dış alan / Bahçe', diger: 'Emin değilim',
+  priz: 'Priz', lamba: 'Lamba / Aydınlatma', sigorta: 'Sigorta atıyor',
+  elektrik_yok: 'Elektrik kesiliyor / gelmiyor', yeni_hat_cihaz: 'Yeni hat / cihaz bağlantısı',
+  gunes_enerjisi: 'Güneş enerjisi sistemi', emin_degil: 'Emin değilim',
+};
+
+const KOLAY_ELEKTRIK_PRIZ_LABELS = {
+  priz_arizali: 'Priz çalışmıyor / arızalı', yeni_priz: 'Yeni priz taktırmak',
+  cihaz_icin_priz: 'Cihaz için güçlü priz', emin_degil: 'Emin değilim',
+};
+
+const KOLAY_ELEKTRIK_LAMBA_LABELS = {
+  avize: 'Avize takma / değişim', sensorlu: 'Sensörlü lamba',
+  spot_led: 'Spot / LED kurulumu', dis_mekan: 'Dış mekan aydınlatma', emin_degil: 'Emin değilim',
+};
+
+const KOLAY_ELEKTRIK_SIGORTA_LABELS = {
+  surekli: 'Sürekli atıyor', bazen: 'Bazen / ara sıra atıyor',
+  cihaz_calisinca: 'Bir cihaz çalışınca atıyor', koku_isinma: 'Koku veya ısınma var',
+  emin_degil: 'Emin değilim',
+};
+
+const KOLAY_ELEKTRIK_GUNES_LABELS = {
+  sistem_calismiyor: 'Sistem çalışmıyor / arıza', aku_cabuk_bitiyor: 'Akü çabuk bitiyor',
+  cihaz_calistirmak: 'Cihaz çalıştırmak istiyorum', uygulama_izleme: 'Uygulama / izleme sorunu',
+  emin_degil: 'Emin değilim',
 };
 
 const KOLAY_ELEKTRIK_YER_LABELS = {
@@ -134,20 +157,40 @@ const KOLAY_ELEKTRIK_YER_LABELS = {
 };
 
 const KOLAY_AG_SORUN_LABELS = {
-  yeni_kurulum: 'Yeni kurulum', wifi_zayif: 'Wi-Fi zayıf / kesiliyor',
-  kablo: 'Kablo çekme', ag_pano: 'Pano / ağ altyapısı', emin_degil: 'Emin değilim',
+  wifi_cekmiyor: 'Wi-Fi çekmiyor / zayıf', internet_kablosu: 'İnternet kablosu çekme',
+  modem_router: 'Modem / router kurulumu', kamera_interneti: 'Kamera için internet',
+  isyeri_agi: 'İş yeri ağ altyapısı', emin_degil: 'Emin değilim',
+};
+
+const KOLAY_AG_YER_LABELS = {
+  ev: 'Ev / Daire', isyeri: 'İş yeri', apartman: 'Apartman / Bina',
+  depo: 'Depo / Atölye', dis_alan: 'Dış alan', emin_degil: 'Emin değilim',
 };
 
 const KOLAY_UYDU_SORUN_LABELS = {
-  yeni_canak: 'Yeni çanak kurulumu', sinyal_yok: 'Sinyal yok / zayıf',
-  oda_ekleme: 'Yeni oda bağlantısı', merkezi: 'Merkezi sistem', emin_degil: 'Emin değilim',
+  yeni_canak_anten: 'Yeni çanak / anten kurulumu', sinyal_yok: 'Sinyal yok / zayıf',
+  kanal_yok: 'Kanal gelmiyor', merkezi_sistem: 'Merkezi sistem',
+  tv_baglanti: 'TV bağlantısı / oda ekleme', emin_degil: 'Emin değilim',
 };
 
 const KOLAY_ALARM_TUR_LABELS = {
-  alarm: 'Alarm sistemi', diyafon: 'Diyafon / Zil',
+  alarm_sistemi: 'Alarm sistemi', kamera_alarm: 'Kamera + Alarm birlikte',
+  diyafon: 'Diyafon / görüntülü zil', kapi_zili: 'Kapı zili',
   kartli_gecis: 'Kartlı / şifreli geçiş', emin_degil: 'Emin değilim',
 };
 
+const KOLAY_APARTMAN_KONU_LABELS = {
+  elektrik_arizasi: 'Elektrik arızası', kamera_guvenlik: 'Güvenlik kamerası',
+  uydu_merkezi: 'Uydu / merkezi anten', aydinlatma_sensor: 'Aydınlatma / sensör',
+  periyodik_bakim: 'Periyodik bakım', emin_degil: 'Emin değilim',
+};
+
+const KOLAY_APARTMAN_BASVURAN_LABELS = {
+  yonetici: 'Site / Bina yöneticisi', kat_maliki: 'Kat maliki',
+  kiraci: 'Kiracı', site_gorevlisi: 'Site görevlisi', emin_degil: 'Emin değilim',
+};
+
+// Geriye dönük uyumluluk (eski kayıtlar için)
 const KOLAY_APARTMAN_SISTEM_LABELS = {
   kamera: 'Güvenlik Kamerası', diyafon: 'Diyafon / Zil',
   elektrik: 'Elektrik / Pano', kapi: 'Kapı / Geçiş', ag: 'İnternet / Ağ',
@@ -194,10 +237,17 @@ function label(map, val) {
 export function buildWaMessage(flowId, answers, refCode) {
   const lines = [];
 
-  lines.push('Merhaba, TEHAŞ sisteminden talep oluşturdum.');
-  if (refCode) lines.push(`Referans kodu: ${refCode}`);
-  lines.push('');
-  lines.push(`Hizmet: ${label(HIZMET_LABELS, flowId)}`);
+  if (flowId === 'kolay_hizmet') {
+    lines.push('TEHAŞ Kolay Hizmet Talep Özeti');
+    if (refCode) lines.push(`Referans kodu: ${refCode}`);
+    lines.push('');
+    lines.push(`Konu: ${label(KOLAY_KONU_LABELS, answers.kolay_hizmet_konu)}`);
+  } else {
+    lines.push('Merhaba, TEHAŞ sisteminden talep oluşturdum.');
+    if (refCode) lines.push(`Referans kodu: ${refCode}`);
+    lines.push('');
+    lines.push(`Hizmet: ${label(HIZMET_LABELS, flowId)}`);
+  }
 
   // İş tipi
   const isTipiKey = `${flowId}_is_tipi`;
@@ -304,10 +354,9 @@ export function buildWaMessage(flowId, answers, refCode) {
     }
   }
 
-  // Kolay Hizmet
+  // Kolay Hizmet — konu dışındaki detaylar (konu başlığı zaten header'da yazıldı)
   if (flowId === 'kolay_hizmet') {
     const konu = answers.kolay_hizmet_konu;
-    if (konu) lines.push(`Konu: ${label(KOLAY_KONU_LABELS, konu)}`);
 
     if (konu === 'kamera') {
       if (answers.kolay_kamera_kullanim)
@@ -325,6 +374,14 @@ export function buildWaMessage(flowId, answers, refCode) {
     if (konu === 'elektrik') {
       if (answers.kolay_elektrik_sorun)
         lines.push(`Konu detayı: ${label(KOLAY_ELEKTRIK_SORUN_LABELS, answers.kolay_elektrik_sorun)}`);
+      if (answers.kolay_elektrik_priz)
+        lines.push(`Priz detayı: ${label(KOLAY_ELEKTRIK_PRIZ_LABELS, answers.kolay_elektrik_priz)}`);
+      if (answers.kolay_elektrik_lamba)
+        lines.push(`Lamba detayı: ${label(KOLAY_ELEKTRIK_LAMBA_LABELS, answers.kolay_elektrik_lamba)}`);
+      if (answers.kolay_elektrik_sigorta)
+        lines.push(`Sigorta durumu: ${label(KOLAY_ELEKTRIK_SIGORTA_LABELS, answers.kolay_elektrik_sigorta)}`);
+      if (answers.kolay_elektrik_gunes)
+        lines.push(`Güneş enerjisi: ${label(KOLAY_ELEKTRIK_GUNES_LABELS, answers.kolay_elektrik_gunes)}`);
       if (answers.kolay_elektrik_yer)
         lines.push(`Uygulama yeri: ${label(KOLAY_ELEKTRIK_YER_LABELS, answers.kolay_elektrik_yer)}`);
     }
@@ -332,6 +389,8 @@ export function buildWaMessage(flowId, answers, refCode) {
     if (konu === 'ag') {
       if (answers.kolay_ag_sorun)
         lines.push(`Konu detayı: ${label(KOLAY_AG_SORUN_LABELS, answers.kolay_ag_sorun)}`);
+      if (answers.kolay_ag_yer)
+        lines.push(`Yer: ${label(KOLAY_AG_YER_LABELS, answers.kolay_ag_yer)}`);
     }
 
     if (konu === 'uydu') {
@@ -345,9 +404,14 @@ export function buildWaMessage(flowId, answers, refCode) {
     }
 
     if (konu === 'apartman') {
-      if (answers.kolay_apartman_sistem?.length)
+      if (answers.kolay_apartman_konu)
+        lines.push(`İş konusu: ${label(KOLAY_APARTMAN_KONU_LABELS, answers.kolay_apartman_konu)}`);
+      if (answers.kolay_apartman_basvuran)
+        lines.push(`Başvuran: ${label(KOLAY_APARTMAN_BASVURAN_LABELS, answers.kolay_apartman_basvuran)}`);
+      // Geriye dönük uyumluluk
+      if (!answers.kolay_apartman_konu && answers.kolay_apartman_sistem?.length)
         lines.push(`Bina sistemleri: ${answers.kolay_apartman_sistem.map((v) => label(KOLAY_APARTMAN_SISTEM_LABELS, v)).join(', ')}`);
-      if (answers.kolay_apartman_sifat)
+      if (!answers.kolay_apartman_basvuran && answers.kolay_apartman_sifat)
         lines.push(`Başvuran: ${label(KOLAY_APARTMAN_SIFAT_LABELS, answers.kolay_apartman_sifat)}`);
     }
 
@@ -358,7 +422,16 @@ export function buildWaMessage(flowId, answers, refCode) {
     }
 
     lines.push('');
-    lines.push('Fotoğraf notu: Varsa mevcut ekipman, arıza ekranı veya kurulum alanının fotoğrafını ekleyebilirsiniz.');
+    const fotoNotu = {
+      kamera:     'Kamera alanı, mevcut cihaz veya arıza ekranı fotoğrafı paylaşırsanız teşhis hızlanır.',
+      elektrik:   'Priz, lamba, pano veya sigorta bölgesinin güvenli mesafeden fotoğrafı teşhisi hızlandırır.',
+      ag:         'Modem, router, switch, kablo ucu veya hata ekranı fotoğrafı teşhisi hızlandırır.',
+      uydu:       'Çanak, LNB, TV hata ekranı veya kablo bağlantısı fotoğrafı teşhisi hızlandırır.',
+      alarm:      'Alarm paneli, diyafon, zil veya kapı önü cihazı fotoğrafı teşhisi hızlandırır.',
+      apartman:   'Ortak alan, pano, aydınlatma, kamera veya arıza bölgesi fotoğrafı değerlendirmeyi hızlandırır.',
+      emin_degil: 'Sorunun görüldüğü yerin fotoğrafı varsa WhatsApp mesajına ekleyebilirsiniz.',
+    }[konu] || 'Varsa mevcut ekipman veya arıza bölgesi fotoğrafını ekleyebilirsiniz.';
+    lines.push(`Fotoğraf notu: ${fotoNotu}`);
   }
 
   // Konum
@@ -517,19 +590,36 @@ export function buildSummaryRows(flowId, answers) {
     if (konu === 'elektrik') {
       if (answers.kolay_elektrik_sorun)
         rows.push({ k: 'Detay', v: label(KOLAY_ELEKTRIK_SORUN_LABELS, answers.kolay_elektrik_sorun) });
+      if (answers.kolay_elektrik_priz)
+        rows.push({ k: 'Priz', v: label(KOLAY_ELEKTRIK_PRIZ_LABELS, answers.kolay_elektrik_priz) });
+      if (answers.kolay_elektrik_lamba)
+        rows.push({ k: 'Lamba', v: label(KOLAY_ELEKTRIK_LAMBA_LABELS, answers.kolay_elektrik_lamba) });
+      if (answers.kolay_elektrik_sigorta)
+        rows.push({ k: 'Sigorta', v: label(KOLAY_ELEKTRIK_SIGORTA_LABELS, answers.kolay_elektrik_sigorta) });
+      if (answers.kolay_elektrik_gunes)
+        rows.push({ k: 'Güneş enerjisi', v: label(KOLAY_ELEKTRIK_GUNES_LABELS, answers.kolay_elektrik_gunes) });
       if (answers.kolay_elektrik_yer)
         rows.push({ k: 'Yer', v: label(KOLAY_ELEKTRIK_YER_LABELS, answers.kolay_elektrik_yer) });
     }
-    if (konu === 'ag' && answers.kolay_ag_sorun)
-      rows.push({ k: 'Detay', v: label(KOLAY_AG_SORUN_LABELS, answers.kolay_ag_sorun) });
+    if (konu === 'ag') {
+      if (answers.kolay_ag_sorun)
+        rows.push({ k: 'Detay', v: label(KOLAY_AG_SORUN_LABELS, answers.kolay_ag_sorun) });
+      if (answers.kolay_ag_yer)
+        rows.push({ k: 'Yer', v: label(KOLAY_AG_YER_LABELS, answers.kolay_ag_yer) });
+    }
     if (konu === 'uydu' && answers.kolay_uydu_sorun)
       rows.push({ k: 'Detay', v: label(KOLAY_UYDU_SORUN_LABELS, answers.kolay_uydu_sorun) });
     if (konu === 'alarm' && answers.kolay_alarm_tur)
       rows.push({ k: 'Sistem', v: label(KOLAY_ALARM_TUR_LABELS, answers.kolay_alarm_tur) });
     if (konu === 'apartman') {
-      if (answers.kolay_apartman_sistem?.length)
+      if (answers.kolay_apartman_konu)
+        rows.push({ k: 'İş konusu', v: label(KOLAY_APARTMAN_KONU_LABELS, answers.kolay_apartman_konu) });
+      if (answers.kolay_apartman_basvuran)
+        rows.push({ k: 'Başvuran', v: label(KOLAY_APARTMAN_BASVURAN_LABELS, answers.kolay_apartman_basvuran) });
+      // Geriye dönük uyumluluk
+      if (!answers.kolay_apartman_konu && answers.kolay_apartman_sistem?.length)
         rows.push({ k: 'Bina sistemleri', v: answers.kolay_apartman_sistem.map((v) => label(KOLAY_APARTMAN_SISTEM_LABELS, v)).join(', ') });
-      if (answers.kolay_apartman_sifat)
+      if (!answers.kolay_apartman_basvuran && answers.kolay_apartman_sifat)
         rows.push({ k: 'Başvuran', v: label(KOLAY_APARTMAN_SIFAT_LABELS, answers.kolay_apartman_sifat) });
     }
     if (konu === 'emin_degil' && answers.kolay_aciklama)
