@@ -184,6 +184,35 @@ export default function DoneScreen({ flowId, answers, onRestart, onHome }) {
           </div>
         </div>
 
+        {/* Sonraki adım kutusu */}
+        <div
+          role="note"
+          aria-label="Sonraki adım"
+          style={{
+            marginBottom: 16,
+            padding: '12px 14px',
+            background: 'rgba(52,229,197,.04)',
+            border: '1px solid rgba(52,229,197,.18)',
+            borderRadius: 10,
+          }}
+        >
+          <div style={{
+            fontFamily: 'var(--f-mono)',
+            fontSize: 9,
+            fontWeight: 500,
+            letterSpacing: '.18em',
+            color: 'var(--t-3)',
+            textTransform: 'uppercase',
+            marginBottom: 6,
+          }}>
+            Sonraki adım
+          </div>
+          <div style={{ fontSize: 13, color: 'var(--t-2)', lineHeight: 1.6 }}>
+            Aşağıdaki butona basarak özeti WhatsApp'a gönderin.
+            Ekibimiz en kısa sürede dönüş yapar.
+          </div>
+        </div>
+
         {/* Kamera kolay mod: TEHAŞ Ön Değerlendirme kartı */}
         {cameraEv && (
           <div

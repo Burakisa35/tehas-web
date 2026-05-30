@@ -79,13 +79,82 @@ const ZAMAN_LABELS = {
 };
 
 const HIZMET_LABELS = {
-  elektrik: 'Elektrik', kamera: 'Güvenlik Kamerası',
-  uydu: 'Uydu / Anten', ag: 'Ağ / İnternet',
-  otomasyon: 'Kapı / Kepenk Otomasyonu', alarm: 'Alarm / Diyafon',
-  basvuru: 'Teknisyen Başvurusu',
-  apartman: 'Apartman Bakımı',
-  akilli_ev: 'Akıllı Ev / Otomasyon',
-  solar:     'Solar & Enerji Altyapısı',
+  elektrik:     'Elektrik', kamera: 'Güvenlik Kamerası',
+  uydu:         'Uydu / Anten', ag: 'Ağ / İnternet',
+  otomasyon:    'Kapı / Kepenk Otomasyonu', alarm: 'Alarm / Diyafon',
+  basvuru:      'Teknisyen Başvurusu',
+  apartman:     'Apartman Bakımı',
+  akilli_ev:    'Akıllı Ev / Otomasyon',
+  solar:        'Solar & Enerji Altyapısı',
+  kolay_hizmet: 'Kolay Hizmet',
+};
+
+const KOLAY_KONU_LABELS = {
+  kamera:     'Güvenlik Kamerası',
+  elektrik:   'Elektrik / Aydınlatma',
+  ag:         'İnternet / Ağ',
+  uydu:       'TV / Uydu',
+  alarm:      'Alarm / Kapı / Diyafon',
+  apartman:   'Apartman / Site İşi',
+  emin_degil: 'Emin değilim',
+};
+
+const KOLAY_KAMERA_KULLANIM_LABELS = {
+  ev: 'Ev / Villa', apartman: 'Apartman / Site',
+  isyeri: 'İş yeri', arazi_bahce: 'Arazi / Bahçe',
+};
+
+const KOLAY_KAMERA_ALAN_EV_LABELS = {
+  kapi_onu: 'Kapı önü', kapi_giris: 'Kapı girişi', bahce_arac: 'Bahçe / araç',
+  otopark: 'Otopark', evin_cevresi: 'Evin çevresi', emin_degil: 'Emin değilim',
+};
+
+const KOLAY_KAMERA_ALAN_ISYERI_LABELS = {
+  giris: 'Giriş', kasa: 'Kasa / yazar kasa', depo: 'Depo',
+  dis_cephe: 'Dış cephe', tum_isyeri: 'Tüm iş yeri', emin_degil: 'Emin değilim',
+};
+
+const KOLAY_KAMERA_ALAN_APARTMAN_LABELS = {
+  bina_girisi: 'Bina girişi', otopark: 'Otopark', asansor: 'Asansör',
+  ortak_alan: 'Ortak alan', dis_cevre: 'Dış çevre', emin_degil: 'Emin değilim',
+};
+
+const KOLAY_KAMERA_IHTIYAC_LABELS = {
+  telefon_izleme: 'Telefondan izleme', gecmis_goruntu: 'Geçmiş görüntü kaydı',
+  gece_goruntu: 'Gece görüntüsü', sadece_canli: 'Sadece canlı izleme',
+};
+
+const KOLAY_ELEKTRIK_SORUN_LABELS = {
+  ariza: 'Arıza / Kesinti', montaj: 'Montaj / Değişim', tesisat: 'Hat / Tesisat',
+  pano: 'Pano / Sigorta', dis_alan: 'Dış alan / Bahçe', diger: 'Emin değilim',
+};
+
+const KOLAY_ELEKTRIK_YER_LABELS = {
+  ev: 'Ev / Daire', isyeri: 'İş yeri', bina: 'Bina / Ortak alan',
+};
+
+const KOLAY_AG_SORUN_LABELS = {
+  yeni_kurulum: 'Yeni kurulum', wifi_zayif: 'Wi-Fi zayıf / kesiliyor',
+  kablo: 'Kablo çekme', ag_pano: 'Pano / ağ altyapısı', emin_degil: 'Emin değilim',
+};
+
+const KOLAY_UYDU_SORUN_LABELS = {
+  yeni_canak: 'Yeni çanak kurulumu', sinyal_yok: 'Sinyal yok / zayıf',
+  oda_ekleme: 'Yeni oda bağlantısı', merkezi: 'Merkezi sistem', emin_degil: 'Emin değilim',
+};
+
+const KOLAY_ALARM_TUR_LABELS = {
+  alarm: 'Alarm sistemi', diyafon: 'Diyafon / Zil',
+  kartli_gecis: 'Kartlı / şifreli geçiş', emin_degil: 'Emin değilim',
+};
+
+const KOLAY_APARTMAN_SISTEM_LABELS = {
+  kamera: 'Güvenlik Kamerası', diyafon: 'Diyafon / Zil',
+  elektrik: 'Elektrik / Pano', kapi: 'Kapı / Geçiş', ag: 'İnternet / Ağ',
+};
+
+const KOLAY_APARTMAN_SIFAT_LABELS = {
+  yonetici: 'Site / Bina yöneticisi', sahip: 'Daire sahibi', kiralik: 'Kiracı',
 };
 
 const EXPERIENCE_MODE_LABELS = {
@@ -235,6 +304,63 @@ export function buildWaMessage(flowId, answers, refCode) {
     }
   }
 
+  // Kolay Hizmet
+  if (flowId === 'kolay_hizmet') {
+    const konu = answers.kolay_hizmet_konu;
+    if (konu) lines.push(`Konu: ${label(KOLAY_KONU_LABELS, konu)}`);
+
+    if (konu === 'kamera') {
+      if (answers.kolay_kamera_kullanim)
+        lines.push(`Kamera yeri: ${label(KOLAY_KAMERA_KULLANIM_LABELS, answers.kolay_kamera_kullanim)}`);
+      if (answers.kolay_kamera_alan_ev?.length)
+        lines.push(`Alan: ${answers.kolay_kamera_alan_ev.map((v) => label(KOLAY_KAMERA_ALAN_EV_LABELS, v)).join(', ')}`);
+      if (answers.kolay_kamera_alan_isyeri?.length)
+        lines.push(`Alan: ${answers.kolay_kamera_alan_isyeri.map((v) => label(KOLAY_KAMERA_ALAN_ISYERI_LABELS, v)).join(', ')}`);
+      if (answers.kolay_kamera_alan_apartman?.length)
+        lines.push(`Alan: ${answers.kolay_kamera_alan_apartman.map((v) => label(KOLAY_KAMERA_ALAN_APARTMAN_LABELS, v)).join(', ')}`);
+      if (answers.kolay_kamera_ihtiyac?.length)
+        lines.push(`Beklenti: ${answers.kolay_kamera_ihtiyac.map((v) => label(KOLAY_KAMERA_IHTIYAC_LABELS, v)).join(', ')}`);
+    }
+
+    if (konu === 'elektrik') {
+      if (answers.kolay_elektrik_sorun)
+        lines.push(`Konu detayı: ${label(KOLAY_ELEKTRIK_SORUN_LABELS, answers.kolay_elektrik_sorun)}`);
+      if (answers.kolay_elektrik_yer)
+        lines.push(`Uygulama yeri: ${label(KOLAY_ELEKTRIK_YER_LABELS, answers.kolay_elektrik_yer)}`);
+    }
+
+    if (konu === 'ag') {
+      if (answers.kolay_ag_sorun)
+        lines.push(`Konu detayı: ${label(KOLAY_AG_SORUN_LABELS, answers.kolay_ag_sorun)}`);
+    }
+
+    if (konu === 'uydu') {
+      if (answers.kolay_uydu_sorun)
+        lines.push(`Konu detayı: ${label(KOLAY_UYDU_SORUN_LABELS, answers.kolay_uydu_sorun)}`);
+    }
+
+    if (konu === 'alarm') {
+      if (answers.kolay_alarm_tur)
+        lines.push(`Sistem türü: ${label(KOLAY_ALARM_TUR_LABELS, answers.kolay_alarm_tur)}`);
+    }
+
+    if (konu === 'apartman') {
+      if (answers.kolay_apartman_sistem?.length)
+        lines.push(`Bina sistemleri: ${answers.kolay_apartman_sistem.map((v) => label(KOLAY_APARTMAN_SISTEM_LABELS, v)).join(', ')}`);
+      if (answers.kolay_apartman_sifat)
+        lines.push(`Başvuran: ${label(KOLAY_APARTMAN_SIFAT_LABELS, answers.kolay_apartman_sifat)}`);
+    }
+
+    if (konu === 'emin_degil' && answers.kolay_aciklama) {
+      lines.push('');
+      lines.push('Açıklama:');
+      lines.push(answers.kolay_aciklama);
+    }
+
+    lines.push('');
+    lines.push('Fotoğraf notu: Varsa mevcut ekipman, arıza ekranı veya kurulum alanının fotoğrafını ekleyebilirsiniz.');
+  }
+
   // Konum
   if (answers.ilce) {
     const konum = answers.mahalle
@@ -370,6 +496,44 @@ export function buildSummaryRows(flowId, answers) {
   if (flowId === 'solar') {
     if (answers.solar_durum) rows.push({ k: 'Sistem durumu', v: answers.solar_durum });
     if (answers.solar_yapi)  rows.push({ k: 'Yapı tipi', v: answers.solar_yapi });
+  }
+
+  if (flowId === 'kolay_hizmet') {
+    const konu = answers.kolay_hizmet_konu;
+    if (konu) rows.push({ k: 'Konu', v: label(KOLAY_KONU_LABELS, konu) });
+
+    if (konu === 'kamera') {
+      if (answers.kolay_kamera_kullanim)
+        rows.push({ k: 'Kamera yeri', v: label(KOLAY_KAMERA_KULLANIM_LABELS, answers.kolay_kamera_kullanim) });
+      if (answers.kolay_kamera_alan_ev?.length)
+        rows.push({ k: 'Alan', v: answers.kolay_kamera_alan_ev.map((v) => label(KOLAY_KAMERA_ALAN_EV_LABELS, v)).join(', ') });
+      if (answers.kolay_kamera_alan_isyeri?.length)
+        rows.push({ k: 'Alan', v: answers.kolay_kamera_alan_isyeri.map((v) => label(KOLAY_KAMERA_ALAN_ISYERI_LABELS, v)).join(', ') });
+      if (answers.kolay_kamera_alan_apartman?.length)
+        rows.push({ k: 'Alan', v: answers.kolay_kamera_alan_apartman.map((v) => label(KOLAY_KAMERA_ALAN_APARTMAN_LABELS, v)).join(', ') });
+      if (answers.kolay_kamera_ihtiyac?.length)
+        rows.push({ k: 'Beklenti', v: answers.kolay_kamera_ihtiyac.map((v) => label(KOLAY_KAMERA_IHTIYAC_LABELS, v)).join(', ') });
+    }
+    if (konu === 'elektrik') {
+      if (answers.kolay_elektrik_sorun)
+        rows.push({ k: 'Detay', v: label(KOLAY_ELEKTRIK_SORUN_LABELS, answers.kolay_elektrik_sorun) });
+      if (answers.kolay_elektrik_yer)
+        rows.push({ k: 'Yer', v: label(KOLAY_ELEKTRIK_YER_LABELS, answers.kolay_elektrik_yer) });
+    }
+    if (konu === 'ag' && answers.kolay_ag_sorun)
+      rows.push({ k: 'Detay', v: label(KOLAY_AG_SORUN_LABELS, answers.kolay_ag_sorun) });
+    if (konu === 'uydu' && answers.kolay_uydu_sorun)
+      rows.push({ k: 'Detay', v: label(KOLAY_UYDU_SORUN_LABELS, answers.kolay_uydu_sorun) });
+    if (konu === 'alarm' && answers.kolay_alarm_tur)
+      rows.push({ k: 'Sistem', v: label(KOLAY_ALARM_TUR_LABELS, answers.kolay_alarm_tur) });
+    if (konu === 'apartman') {
+      if (answers.kolay_apartman_sistem?.length)
+        rows.push({ k: 'Bina sistemleri', v: answers.kolay_apartman_sistem.map((v) => label(KOLAY_APARTMAN_SISTEM_LABELS, v)).join(', ') });
+      if (answers.kolay_apartman_sifat)
+        rows.push({ k: 'Başvuran', v: label(KOLAY_APARTMAN_SIFAT_LABELS, answers.kolay_apartman_sifat) });
+    }
+    if (konu === 'emin_degil' && answers.kolay_aciklama)
+      rows.push({ k: 'Açıklama', v: answers.kolay_aciklama });
   }
 
   if (answers.ilce) {

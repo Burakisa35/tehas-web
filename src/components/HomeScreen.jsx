@@ -30,6 +30,31 @@ export default function HomeScreen({ onFlowStart }) {
         </div>
       </header>
 
+      {/* Kolay Hizmet CTA — tam genişlik, üst konumda */}
+      <div style={{ padding: '16px 16px 0' }}>
+        <button
+          className="home-card-action"
+          onClick={() => onFlowStart('kolay_hizmet')}
+          aria-label="Kolay Hizmet İstiyorum"
+          style={{
+            background: 'linear-gradient(135deg, rgba(52,229,197,.12) 0%, rgba(52,229,197,.06) 100%)',
+            border: '1.5px solid rgba(52,229,197,.35)',
+            borderRadius: 14,
+          }}
+        >
+          <span style={{ fontSize: 28, lineHeight: 1, flexShrink: 0 }} aria-hidden="true">🧭</span>
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div className="home-card-title" style={{ color: 'var(--cyan)', fontWeight: 700 }}>
+              Kolay Hizmet İstiyorum
+            </div>
+            <div className="home-card-sub">
+              Teknik bilmiyorum — sadece durumu anlat, yönlendirelim
+            </div>
+          </div>
+          <span style={{ color: 'var(--cyan)', fontSize: 18, flexShrink: 0 }} aria-hidden="true">›</span>
+        </button>
+      </div>
+
       {/* 6 hizmet — 2 sütunlu grid */}
       <div className="home-card-grid" style={{ paddingTop: 16 }}>
         {FLOWS.map((f) => (
