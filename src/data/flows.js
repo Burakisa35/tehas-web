@@ -45,8 +45,8 @@ export const ZAMAN_ADIMI = {
 export const ILETISIM_ADIMI = {
   id: 'iletisim',
   label: 'İletişim',
-  title: 'Son adım — sizi nasıl arayalım?',
-  subtitle: 'Yalnızca bu talep için kullanılır. Üçüncü tarafla paylaşılmaz.',
+  title: 'Son adım — iletişim bilgileriniz',
+  subtitle: 'Yalnızca bu talep için kullanılır.',
   type: 'contact',
   required: true,
 };
@@ -71,6 +71,25 @@ export const ELEKTRIK_FLOW = {
         { value: 'tesisat',     label: 'Tesisat',          ico: '🏗️', sub: 'Daire, bina, inşaat, klima hattı' },
         { value: 'hat_cekme',   label: 'Hat çekme',        ico: '📐', sub: 'Priz, klima, internet, topraklama hattı' },
         { value: 'diger',       label: 'Diğer / Emin değilim', ico: '💡', sub: 'WhatsApp\'tan birlikte belirleriz' },
+      ],
+    },
+    // Arıza → belirti
+    {
+      id: 'elektrik_ariza_tipi',
+      label: 'Arıza Belirtisi',
+      title: 'Arıza nasıl bir belirti veriyor?',
+      subtitle: null,
+      type: 'choice',
+      required: false,
+      skipLabel: 'Emin değilim',
+      condition: (a) => a.elektrik_is_tipi === 'ariza',
+      options: [
+        { value: 'sigorta',   label: 'Sigortam atıyor',               ico: '⚙️', sub: 'Devre kesici veya sigorta düşüyor' },
+        { value: 'lamba',     label: 'Lambam sürekli patlıyor',        ico: '💡', sub: 'Ampul kısa sürede yanıyor' },
+        { value: 'esya',      label: 'Elektrikli eşyalarım arızalanıyor', ico: '🔌', sub: 'Cihazlar zarar görüyor' },
+        { value: 'tesisat',   label: 'Kablo veya tesisat sorunu',      ico: '🔧', sub: 'Kıvılcım, koku veya kopuk hat' },
+        { value: 'diger',     label: 'Diğer',                          ico: '❓', sub: '' },
+        { value: 'emin_degil',label: 'Emin değilim',                   ico: '💬', sub: 'Birlikte değerlendirelim' },
       ],
     },
     // Montaj → ürün
@@ -255,15 +274,6 @@ export const KAMERA_FLOW = {
     },
     ...KONUM_ADIMLARI,
     ZAMAN_ADIMI,
-    {
-      id: 'kamera_detay',
-      label: 'Mevcut Sistem',
-      title: 'Mevcut sistem hakkında bilgi verin',
-      subtitle: null,
-      type: 'textarea',
-      required: false,
-      skipLabel: 'Bilgim yok / Atla',
-    },
     ILETISIM_ADIMI,
   ],
 };
@@ -317,6 +327,24 @@ export const AG_FLOW = {
         { value: 'ap',      label: 'Access point / mesh kurulumu', ico: '📶', sub: 'Geniş alan kapsama çözümü' },
         { value: 'ariza',   label: 'Mevcut ağ sorunu',             ico: '🔍', sub: 'Bağlantı yok, hız düşüklüğü' },
         { value: 'diger',   label: 'Diğer / Emin değilim',        ico: '💬', sub: '' },
+      ],
+    },
+    // Switch/Router → cihaz amacı
+    {
+      id: 'ag_switch_tip',
+      label: 'Cihaz Amacı',
+      title: 'Cihaz ne için kurulacak?',
+      subtitle: null,
+      type: 'choice',
+      required: false,
+      skipLabel: 'Emin değilim',
+      condition: (a) => a.ag_is_tipi === 'switch',
+      options: [
+        { value: 'ev',       label: 'Ev / daire için',         ico: '🏠', sub: 'Ev ağı ve internet paylaşımı' },
+        { value: 'isyeri',   label: 'İş yeri / ofis için',     ico: '🏪', sub: 'Ofis ve çalışma alanı' },
+        { value: 'cok_kat',  label: 'Birden fazla kat için',   ico: '🏢', sub: 'Bina veya çok katlı yapı' },
+        { value: 'dis_alan', label: 'Dış alan / bahçe için',   ico: '🌳', sub: 'Açık alan kapsama' },
+        { value: 'emin_degil', label: 'Emin değilim',          ico: '💬', sub: '' },
       ],
     },
     // Kablo seçilince mesafe sorusu

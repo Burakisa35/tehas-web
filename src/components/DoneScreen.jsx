@@ -39,13 +39,16 @@ function buildFis(rows) {
 }
 
 export default function DoneScreen({ flowId, answers, onRestart, onHome }) {
-  const [refCode, setRefCode] = useState('');
-  const [copied,  setCopied]  = useState(false);
+  const [refCode,  setRefCode]  = useState('');
+  const [copied,   setCopied]   = useState(false);
+  const [showAnim, setShowAnim] = useState(true); // 3 sn animasyon, sonra normal görünüm
 
   useEffect(() => {
     const code = generateRefCode();
     saveToLocal(code, { flowId, phone: answers.iletisim_tel, ...answers });
     setRefCode(code);
+    const t = setTimeout(() => setShowAnim(false), 3000);
+    return () => clearTimeout(t);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const waUrl = buildWaUrl(flowId, answers, refCode);
@@ -87,8 +90,31 @@ export default function DoneScreen({ flowId, answers, onRestart, onHome }) {
             : 'Talebinizin özetini WhatsApp ile gönderin, birlikte netleştirelim.'}
         </p>
 
-        {/* Referans kodu + kopyala */}
-        {refCode && (
+        {/* Referans kodu — animasyon (3sn) → normal */}
+        {refCode && showAnim && (
+          <div
+            role="note"
+            aria-label="Referans kodu hazırlandı"
+            style={{
+              textAlign: 'center',
+              padding: '20px 16px',
+              background: 'rgba(52,229,197,.07)',
+              border: '1px solid rgba(52,229,197,.3)',
+              borderRadius: 14,
+              marginBottom: 16,
+              animation: 'screen-enter .4s ease-out both',
+            }}
+          >
+            <div style={{ fontSize: 13, color: 'var(--t-3)', marginBottom: 10 }}>
+              📸 Referans kodunuz hazırlandı — lütfen ekran görüntüsü alın
+            </div>
+            <div style={{ fontFamily: 'var(--f-mono)', fontSize: 28, fontWeight: 700, letterSpacing: '.12em', color: 'var(--cyan)', lineHeight: 1.2 }}>
+              {refCode}
+            </div>
+          </div>
+        )}
+
+        {refCode && !showAnim && (
           <div
             style={{
               display: 'flex',

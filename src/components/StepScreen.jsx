@@ -498,6 +498,11 @@ export default function StepScreen({
     if (val) setTimeout(onNext, 300);
   }
 
+  function handleMahalleAutoAdvance(val) {
+    onAnswer('mahalle', val);
+    if (val) setTimeout(onNext, 300);
+  }
+
   function handleContactChange(field, val) {
     onAnswer(field, val);
   }
@@ -578,12 +583,12 @@ export default function StepScreen({
           />
         )}
 
-        {/* Mahalle seçimi */}
+        {/* Mahalle seçimi — seçince otomatik ilerle */}
         {step.type === 'mahalle-select' && (
           <MahalleSelect
             ilce={answers.ilce}
             value={answers.mahalle}
-            onChange={(val) => onAnswer('mahalle', val)}
+            onChange={handleMahalleAutoAdvance}
           />
         )}
 
@@ -603,8 +608,8 @@ export default function StepScreen({
         )}
       </div>
 
-      {/* CTA — choice/choice-grid/ilce-select auto-advance kullanır, buton gösterilmez */}
-      {!['choice', 'choice-grid', 'ilce-select'].includes(step.type) && (
+      {/* CTA — auto-advance tipler buton göstermez */}
+      {!['choice', 'choice-grid', 'ilce-select', 'mahalle-select'].includes(step.type) && (
         <div className="cta-area">
           <button
             className="btn-primary"
