@@ -286,9 +286,10 @@ export const KAMERA_FLOW = {
       required: true,
       condition: (a) => a.experience_mode === 'simple',
       options: [
-        { value: 'ev',        label: 'Evim için',       ico: '🏠', sub: 'Kapı, bahçe, araç girişi' },
-        { value: 'apartman',  label: 'Apartman için',   ico: '🏢', sub: 'Giriş, otopark, ortak alan' },
-        { value: 'isyeri',    label: 'İş yerim için',   ico: '🏪', sub: 'Dükkan, ofis, depo' },
+        { value: 'ev',          label: 'Evim için',              ico: '🏠', sub: 'Kapı, bahçe, araç girişi' },
+        { value: 'apartman',    label: 'Apartman için',          ico: '🏢', sub: 'Giriş, otopark, ortak alan' },
+        { value: 'isyeri',      label: 'İş yerim için',          ico: '🏪', sub: 'Dükkan, ofis, depo' },
+        { value: 'arazi_bahce', label: 'Arazi / bahçe için',     ico: '🌿', sub: 'Elektrik veya internet olmayan dış alan' },
       ],
     },
     {
@@ -444,7 +445,7 @@ export const KAMERA_FLOW = {
       ],
     },
     {
-      id: 'kamera_not',
+      id: 'kamera_detay',
       label: 'Detay',
       title: 'Eklemek istediğiniz bir detay var mı?',
       subtitle: 'Opsiyonel — iç/dış mekan, gece görüşü, kat bilgisi, kablo mesafesi…',
