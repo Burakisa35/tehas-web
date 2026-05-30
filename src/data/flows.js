@@ -380,18 +380,6 @@ export const ALARM_FLOW = {
 };
 
 // ── Flow kaydı ────────────────────────────────────────────────────
-export const FLOWS = {
-  elektrik:  ELEKTRIK_FLOW,
-  kamera:    KAMERA_FLOW,
-  uydu:      UYDU_FLOW,
-  ag:        AG_FLOW,
-  otomasyon: OTOMASYON_FLOW,
-  alarm:     ALARM_FLOW,
-  basvuru:   BASVURU_FLOW,
-};
-
-export default FLOWS;
-
 // ── Teknisyen Başvuru Akışı ───────────────────────────────────────
 export const BASVURU_FLOW = {
   id: 'basvuru',
@@ -509,3 +497,15 @@ export const BASVURU_FLOW = {
     },
   ],
 };
+
+export const FLOWS = {
+  elektrik:  ELEKTRIK_FLOW,
+  kamera:    KAMERA_FLOW,
+  uydu:      UYDU_FLOW,
+  ag:        AG_FLOW,
+  otomasyon: OTOMASYON_FLOW,
+  alarm:     ALARM_FLOW,
+  basvuru:   BASVURU_FLOW,
+};
+
+export default FLOWS;
