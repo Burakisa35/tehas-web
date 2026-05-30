@@ -1,3 +1,5 @@
+import { evaluateCameraLead } from './tehasDecisionEngine.js';
+
 export const WA_PHONE = '905367807059';
 
 // Etiket çözücüler ─────────────────────────────────────────────
@@ -259,10 +261,21 @@ export function buildWaMessage(flowId, answers, refCode) {
   if (flowId === 'kamera') {
     lines.push('');
     if (answers.experience_mode === 'simple') {
-      lines.push(
-        'TEHAŞ ön notu: Seçimlerinize göre teknik değerlendirme yapılacaktır. ' +
-        'Konum ve alan fotoğrafını bu WhatsApp görüşmesinden paylaşabilirsiniz.'
-      );
+      const ev = evaluateCameraLead(answers);
+      const priLabel = { dusuk: 'Düşük', orta: 'Orta', yuksek: 'Yüksek' }[ev.priority] || ev.priority;
+      lines.push('— TEHAŞ Ön Değerlendirme —');
+      lines.push(`Öncelik: ${priLabel}`);
+      lines.push(`Öneri: ${ev.suggestedSystem}`);
+      lines.push(`Not: ${ev.whatsappInsight}`);
+      if (ev.needsPhoto) {
+        lines.push(
+          'Fotoğraf notu: Mevcut alan, kamera yeri, DVR/NVR, modem/switch ' +
+          'veya arıza ekranı fotoğrafı teşhisi hızlandırır.'
+        );
+      }
+      if (ev.needsDiscovery) {
+        lines.push('Keşif/görüşme notu: Talep görüşme veya saha bilgisiyle netleştirilmelidir.');
+      }
     } else {
       lines.push(
         'Varsa mevcut sistem fotoğraflarını ve ' +

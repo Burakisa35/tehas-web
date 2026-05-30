@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { buildWaUrl, buildSummaryRows } from '../utils/whatsapp.js';
 import { generateRefCode, saveToLocal } from '../utils/refcode.js';
+import { evaluateCameraLead } from '../utils/tehasDecisionEngine.js';
 
 // buildSummaryRows'un döndürdüğü satırlardan 3 blok üretir
 function buildFis(rows) {
@@ -51,9 +52,12 @@ export default function DoneScreen({ flowId, answers, onRestart, onHome }) {
     return () => clearTimeout(t);
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const waUrl = buildWaUrl(flowId, answers, refCode);
-  const rows  = buildSummaryRows(flowId, answers);
+  const waUrl    = buildWaUrl(flowId, answers, refCode);
+  const rows     = buildSummaryRows(flowId, answers);
   const { talepV, planV, iletV } = buildFis(rows);
+  const cameraEv = flowId === 'kamera' && answers.experience_mode === 'simple'
+    ? evaluateCameraLead(answers)
+    : null;
 
   const hasContact = answers.iletisim_ad || answers.iletisim_tel;
 
@@ -179,6 +183,81 @@ export default function DoneScreen({ flowId, answers, onRestart, onHome }) {
             <div className="summary-v">{iletV}</div>
           </div>
         </div>
+
+        {/* Kamera kolay mod: TEHAŞ Ön Değerlendirme kartı */}
+        {cameraEv && (
+          <div
+            role="region"
+            aria-label="TEHAŞ Ön Değerlendirme"
+            style={{
+              marginBottom: 16,
+              padding: '14px 14px 12px',
+              background: 'rgba(52,229,197,.05)',
+              border: '1px solid rgba(52,229,197,.2)',
+              borderRadius: 12,
+            }}
+          >
+            <div style={{
+              fontFamily: 'var(--f-mono)',
+              fontSize: 9,
+              fontWeight: 500,
+              letterSpacing: '.18em',
+              color: 'var(--cyan)',
+              textTransform: 'uppercase',
+              marginBottom: 10,
+            }}>
+              TEHAŞ Ön Değerlendirme
+            </div>
+
+            {/* Sistem önerisi */}
+            <div style={{ fontSize: 14, fontWeight: 600, color: 'var(--t-1)', marginBottom: 6, lineHeight: 1.35 }}>
+              {cameraEv.suggestedSystem}
+            </div>
+
+            {/* Öncelik chip */}
+            <div style={{ marginBottom: 8 }}>
+              <span style={{
+                display: 'inline-block',
+                fontSize: 11,
+                fontWeight: 600,
+                letterSpacing: '.04em',
+                padding: '3px 9px',
+                borderRadius: 6,
+                background: cameraEv.priority === 'yuksek'
+                  ? 'rgba(248,113,113,.15)'
+                  : cameraEv.priority === 'orta'
+                    ? 'rgba(251,191,36,.15)'
+                    : 'rgba(52,229,197,.12)',
+                color: cameraEv.priority === 'yuksek'
+                  ? 'var(--red,#f87171)'
+                  : cameraEv.priority === 'orta'
+                    ? '#fbbf24'
+                    : 'var(--cyan)',
+              }}>
+                {cameraEv.priority === 'yuksek' ? 'Öncelik: Yüksek'
+                  : cameraEv.priority === 'orta' ? 'Öncelik: Orta'
+                  : 'Öncelik: Düşük'}
+              </span>
+            </div>
+
+            {/* Insight metni */}
+            <div style={{ fontSize: 12, color: 'var(--t-2)', lineHeight: 1.6, marginBottom: cameraEv.needsPhoto || cameraEv.needsDiscovery ? 8 : 0 }}>
+              {cameraEv.whatsappInsight}
+            </div>
+
+            {/* Ek notlar */}
+            {cameraEv.needsPhoto && (
+              <div style={{ fontSize: 11, color: 'var(--t-3)', lineHeight: 1.55, marginTop: 4 }}>
+                📷 Fotoğraf paylaşırsanız teşhis hızlanır.
+              </div>
+            )}
+            {cameraEv.needsDiscovery && (
+              <div style={{ fontSize: 11, color: 'var(--t-3)', lineHeight: 1.55, marginTop: 4 }}>
+                🔎 Görüşme / keşif ile netleştirilmelidir.
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Kamera: fotoğraf ipucu */}
         {flowId === 'kamera' && (
