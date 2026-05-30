@@ -42,6 +42,19 @@ export const ZAMAN_ADIMI = {
   ],
 };
 
+export const DENEYIM_MODU_ADIMI = {
+  id: 'experience_mode',
+  label: 'İlerleme şekli',
+  title: 'Nasıl ilerlemek istersiniz?',
+  subtitle: 'Teknik bilgi bilmenize gerek yok. Size uygun yolu seçin.',
+  type: 'choice',
+  required: true,
+  options: [
+    { value: 'simple',    label: 'Kolay Anlatım',       ico: '🙂', sub: 'Sade sorularla ilerlemek istiyorum' },
+    { value: 'technical', label: 'Teknik / Kurumsal',   ico: '🧩', sub: 'Sistem tipini veya teknik ihtiyacı biliyorum' },
+  ],
+};
+
 export const ILETISIM_ADIMI = {
   id: 'iletisim',
   label: 'İletişim',
@@ -260,6 +273,100 @@ export const KAMERA_FLOW = {
   ico: '📷',
   fiyatBadge: { text: 'Kamera adedine göre teklif', sub: 'Hikvision Partner Pro sertifikalı kurulum' },
   steps: [
+    // ── Ortak: mod seçimi ─────────────────────────────────────────
+    DENEYIM_MODU_ADIMI,
+
+    // ── Kolay mod ─────────────────────────────────────────────────
+    {
+      id: 'kamera_kolay_kullanim',
+      label: 'Kullanım yeri',
+      title: 'Kamerayı nerede kullanacaksınız?',
+      subtitle: null,
+      type: 'choice',
+      required: true,
+      condition: (a) => a.experience_mode === 'simple',
+      options: [
+        { value: 'ev',        label: 'Evim için',       ico: '🏠', sub: 'Kapı, bahçe, araç girişi' },
+        { value: 'apartman',  label: 'Apartman için',   ico: '🏢', sub: 'Giriş, otopark, ortak alan' },
+        { value: 'isyeri',    label: 'İş yerim için',   ico: '🏪', sub: 'Dükkan, ofis, depo' },
+      ],
+    },
+    {
+      id: 'kamera_kolay_alan_ev',
+      label: 'Alan',
+      title: 'Hangi alanı izlemek istiyorsunuz?',
+      subtitle: null,
+      type: 'choice',
+      required: false,
+      skipLabel: 'Emin değilim',
+      condition: (a) => a.experience_mode === 'simple' && a.kamera_kolay_kullanim === 'ev',
+      options: [
+        { value: 'kapi_onu',    label: 'Kapı önü',      ico: '🚪' },
+        { value: 'kapi_giris',  label: 'Kapı girişi',   ico: '🔑' },
+        { value: 'bahce_arac',  label: 'Bahçe / araç',  ico: '🚗' },
+        { value: 'otopark',     label: 'Otopark',        ico: '🅿️' },
+        { value: 'evin_cevresi',label: 'Evin çevresi',  ico: '🏡' },
+        { value: 'emin_degil',  label: 'Emin değilim',  ico: '💬' },
+      ],
+    },
+    {
+      id: 'kamera_kolay_alan_isyeri',
+      label: 'Alan',
+      title: 'Hangi alanları izlemek istiyorsunuz?',
+      subtitle: 'Birden fazla seçebilirsiniz.',
+      type: 'multi-choice',
+      required: false,
+      skipLabel: 'Emin değilim',
+      condition: (a) => a.experience_mode === 'simple' && a.kamera_kolay_kullanim === 'isyeri',
+      options: [
+        { value: 'giris',      label: 'Giriş',             ico: '🚪' },
+        { value: 'kasa',       label: 'Kasa / yazar kasa', ico: '💰' },
+        { value: 'depo',       label: 'Depo',              ico: '📦' },
+        { value: 'dis_cephe',  label: 'Dış cephe',         ico: '🏢' },
+        { value: 'tum_isyeri', label: 'Tüm iş yeri',       ico: '🏪' },
+        { value: 'emin_degil', label: 'Emin değilim',      ico: '💬' },
+      ],
+    },
+    {
+      id: 'kamera_kolay_alan_apartman',
+      label: 'Alan',
+      title: 'Hangi ortak alanları izlemek istiyorsunuz?',
+      subtitle: 'Birden fazla seçebilirsiniz.',
+      type: 'multi-choice',
+      required: false,
+      skipLabel: 'Emin değilim',
+      condition: (a) => a.experience_mode === 'simple' && a.kamera_kolay_kullanim === 'apartman',
+      options: [
+        { value: 'bina_girisi', label: 'Bina girişi', ico: '🚪' },
+        { value: 'otopark',     label: 'Otopark',      ico: '🅿️' },
+        { value: 'asansor',     label: 'Asansör',      ico: '🛗' },
+        { value: 'ortak_alan',  label: 'Ortak alan',   ico: '🏢' },
+        { value: 'dis_cevre',   label: 'Dış çevre',    ico: '🌿' },
+        { value: 'emin_degil',  label: 'Emin değilim', ico: '💬' },
+      ],
+    },
+    {
+      id: 'kamera_kolay_ihtiyac',
+      label: 'İhtiyaç',
+      title: 'Özel bir ihtiyacınız var mı?',
+      subtitle: 'Birden fazla seçebilirsiniz.',
+      type: 'multi-choice',
+      required: false,
+      skipLabel: 'Emin değilim',
+      condition: (a) => a.experience_mode === 'simple',
+      options: [
+        { value: 'telefon_izleme', label: 'Telefondan izleme',      ico: '📱' },
+        { value: 'gecmis_goruntu', label: 'Geçmiş görüntü kaydı',   ico: '💾' },
+        { value: 'gece_goruntu',   label: 'Gece görüntüsü',          ico: '🌙' },
+        { value: 'sadece_canli',   label: 'Sadece canlı izleme',     ico: '👁️' },
+      ],
+    },
+    { ...ILETISIM_ADIMI,     condition: (a) => a.experience_mode === 'simple' },
+    { ...KONUM_ADIMLARI[0],  condition: (a) => a.experience_mode === 'simple' },
+    { ...KONUM_ADIMLARI[1],  condition: (a) => a.experience_mode === 'simple' && !!a.ilce },
+    { ...ZAMAN_ADIMI,        condition: (a) => a.experience_mode === 'simple' },
+
+    // ── Teknik mod ────────────────────────────────────────────────
     {
       id: 'kamera_is_tipi',
       label: 'İş tipi',
@@ -267,6 +374,7 @@ export const KAMERA_FLOW = {
       subtitle: null,
       type: 'choice',
       required: true,
+      condition: (a) => a.experience_mode === 'technical',
       options: [
         { value: 'yeni_sistem',     label: 'Yeni kamera kurulumu',          ico: '📷', sub: 'Sıfırdan sistem kurulumu' },
         { value: 'ariza',           label: 'Mevcut kamera arızası',          ico: '🔍', sub: 'Görüntü yok, kopuk, donuyor' },
@@ -282,7 +390,6 @@ export const KAMERA_FLOW = {
         { value: 'diger',           label: 'Emin değilim',                   ico: '💬', sub: '' },
       ],
     },
-    // Sistem tipi
     {
       id: 'kamera_sistem_tipi',
       label: 'Sistem tipi',
@@ -291,16 +398,15 @@ export const KAMERA_FLOW = {
       type: 'choice',
       required: false,
       skipLabel: 'Bilmiyorum',
-      condition: (a) => ['yeni_sistem','ariza','kayit_sorun','ilk_denetim','bakim','apartman_kamera','isyeri_kamera','villa_kamera','entegrasyon'].includes(a.kamera_is_tipi),
+      condition: (a) => a.experience_mode === 'technical' && ['yeni_sistem','ariza','kayit_sorun','ilk_denetim','bakim','apartman_kamera','isyeri_kamera','villa_kamera','entegrasyon'].includes(a.kamera_is_tipi),
       options: [
-        { value: 'ahd',       label: 'AHD / Analog',  ico: '📺', sub: 'Coax kablo, DVR' },
-        { value: 'ip_poe',    label: 'IP / PoE',       ico: '🌐', sub: 'Cat6 kablo, NVR, PoE switch' },
-        { value: 'wifi',      label: 'Wi-Fi kamera',   ico: '📶', sub: 'Kablosuz, modem bağlantılı' },
-        { value: 'solar_tip', label: 'Solar / 4G',     ico: '☀️', sub: 'Güneş panelli, SIM kartlı' },
-        { value: 'bilmiyorum',label: 'Bilmiyorum',     ico: '❓', sub: '' },
+        { value: 'ahd',       label: 'AHD / Analog', ico: '📺', sub: 'Coax kablo, DVR' },
+        { value: 'ip_poe',    label: 'IP / PoE',      ico: '🌐', sub: 'Cat6 kablo, NVR, PoE switch' },
+        { value: 'wifi',      label: 'Wi-Fi kamera',  ico: '📶', sub: 'Kablosuz, modem bağlantılı' },
+        { value: 'solar_tip', label: 'Solar / 4G',    ico: '☀️', sub: 'Güneş panelli, SIM kartlı' },
+        { value: 'bilmiyorum',label: 'Bilmiyorum',    ico: '❓', sub: '' },
       ],
     },
-    // Kamera sayısı
     {
       id: 'kamera_adet',
       label: 'Kamera sayısı',
@@ -309,7 +415,7 @@ export const KAMERA_FLOW = {
       type: 'choice-grid',
       required: false,
       skipLabel: 'Bilmiyorum',
-      condition: (a) => ['yeni_sistem','apartman_kamera','isyeri_kamera','villa_kamera','entegrasyon','solar_4g'].includes(a.kamera_is_tipi),
+      condition: (a) => a.experience_mode === 'technical' && ['yeni_sistem','apartman_kamera','isyeri_kamera','villa_kamera','entegrasyon','solar_4g'].includes(a.kamera_is_tipi),
       options: [
         { value: '1-2',   label: '1–2',   ico: '①' },
         { value: '3-4',   label: '3–4',   ico: '②' },
@@ -319,7 +425,6 @@ export const KAMERA_FLOW = {
         { value: '32+',   label: '32+',   ico: '⑥' },
       ],
     },
-    // Kurulum yeri
     {
       id: 'kamera_yer',
       label: 'Kurulum yeri',
@@ -328,17 +433,16 @@ export const KAMERA_FLOW = {
       type: 'choice-grid',
       required: false,
       skipLabel: 'Emin değilim',
-      condition: (a) => ['yeni_sistem', 'ek_kamera', 'sadece_montaj', 'sokum_takma'].includes(a.kamera_is_tipi),
+      condition: (a) => a.experience_mode === 'technical' && ['yeni_sistem','apartman_kamera','isyeri_kamera','villa_kamera','entegrasyon','solar_4g'].includes(a.kamera_is_tipi),
       options: [
-        { value: 'ev_daire',   label: 'Ev / Daire',       ico: '🏠' },
-        { value: 'isyeri',     label: 'İş yeri / Dükkan', ico: '🏪' },
-        { value: 'bina',       label: 'Bina / Apartman',  ico: '🏢' },
-        { value: 'depo',       label: 'Depo / Atölye',    ico: '🏭' },
-        { value: 'bahce',      label: 'Bahçe / Dış alan', ico: '🌳' },
-        { value: 'diger',      label: 'Diğer',            ico: '📍' },
+        { value: 'ev_daire', label: 'Ev / Daire',       ico: '🏠' },
+        { value: 'isyeri',   label: 'İş yeri / Dükkan', ico: '🏪' },
+        { value: 'bina',     label: 'Bina / Apartman',  ico: '🏢' },
+        { value: 'depo',     label: 'Depo / Atölye',    ico: '🏭' },
+        { value: 'bahce',    label: 'Bahçe / Dış alan', ico: '🌳' },
+        { value: 'diger',    label: 'Diğer',            ico: '📍' },
       ],
     },
-    // Ek not (opsiyonel textarea)
     {
       id: 'kamera_not',
       label: 'Detay',
@@ -347,11 +451,12 @@ export const KAMERA_FLOW = {
       type: 'textarea',
       required: false,
       skipLabel: 'Hayır, yeterli',
-      condition: (a) => ['yeni_sistem', 'ek_kamera', 'sadece_montaj'].includes(a.kamera_is_tipi),
+      condition: (a) => a.experience_mode === 'technical' && ['yeni_sistem','apartman_kamera','isyeri_kamera','villa_kamera','entegrasyon','solar_4g'].includes(a.kamera_is_tipi),
     },
-    ...KONUM_ADIMLARI,
-    ZAMAN_ADIMI,
-    ILETISIM_ADIMI,
+    { ...ILETISIM_ADIMI,    condition: (a) => a.experience_mode === 'technical' },
+    { ...KONUM_ADIMLARI[0], condition: (a) => a.experience_mode === 'technical' },
+    { ...KONUM_ADIMLARI[1], condition: (a) => a.experience_mode === 'technical' && !!a.ilce },
+    { ...ZAMAN_ADIMI,       condition: (a) => a.experience_mode === 'technical' },
   ],
 };
 

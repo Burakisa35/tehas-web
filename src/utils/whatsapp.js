@@ -86,6 +86,35 @@ const HIZMET_LABELS = {
   solar:     'Solar & Enerji Altyapısı',
 };
 
+const EXPERIENCE_MODE_LABELS = {
+  simple:    'Kolay Anlatım',
+  technical: 'Teknik / Kurumsal',
+};
+
+const KOLAY_KULLANIM_LABELS = {
+  ev: 'Ev', apartman: 'Apartman', isyeri: 'İş yeri',
+};
+
+const KOLAY_ALAN_EV_LABELS = {
+  kapi_onu: 'Kapı önü', kapi_giris: 'Kapı girişi', bahce_arac: 'Bahçe / araç',
+  otopark: 'Otopark', evin_cevresi: 'Evin çevresi', emin_degil: 'Emin değilim',
+};
+
+const KOLAY_ALAN_ISYERI_LABELS = {
+  giris: 'Giriş', kasa: 'Kasa / yazar kasa', depo: 'Depo',
+  dis_cephe: 'Dış cephe', tum_isyeri: 'Tüm iş yeri', emin_degil: 'Emin değilim',
+};
+
+const KOLAY_ALAN_APARTMAN_LABELS = {
+  bina_girisi: 'Bina girişi', otopark: 'Otopark', asansor: 'Asansör',
+  ortak_alan: 'Ortak alan', dis_cevre: 'Dış çevre', emin_degil: 'Emin değilim',
+};
+
+const KOLAY_IHTIYAC_LABELS = {
+  telefon_izleme: 'Telefondan izleme', gecmis_goruntu: 'Geçmiş görüntü kaydı',
+  gece_goruntu: 'Gece görüntüsü', sadece_canli: 'Sadece canlı izleme',
+};
+
 function label(map, val) {
   return map[val] || val || '';
 }
@@ -175,26 +204,32 @@ export function buildWaMessage(flowId, answers, refCode) {
     if (answers.ev_sarj_tip)           lines.push(`Şarj tipi: ${answers.ev_sarj_tip}`);
   }
 
-  // Kamera sistem tipi
+  // Kamera — mod ayrımlı blok
   if (flowId === 'kamera') {
-    if (answers.kamera_sistem_tipi) lines.push(`Sistem tipi: ${answers.kamera_sistem_tipi}`);
-  }
+    const mod = EXPERIENCE_MODE_LABELS[answers.experience_mode] || answers.experience_mode;
+    if (mod) lines.push(`Anlatım modu: ${mod}`);
 
-  // Kamera özeli
-  if (flowId === 'kamera') {
-    if (answers.kamera_adet) {
-      lines.push(`Kamera adedi: ${answers.kamera_adet}`);
-    }
-    if (answers.kamera_yer) {
-      lines.push(`Kurulum yeri: ${label(YER_LABELS, answers.kamera_yer)}`);
-    }
-    if (answers.kamera_not) {
-      lines.push(`Detay: ${answers.kamera_not}`);
-    }
-    if (answers.kamera_detay) {
-      lines.push('');
-      lines.push('Mevcut Sistem Bilgisi');
-      lines.push(answers.kamera_detay);
+    if (answers.experience_mode === 'simple') {
+      if (answers.kamera_kolay_kullanim)
+        lines.push(`Kullanım: ${label(KOLAY_KULLANIM_LABELS, answers.kamera_kolay_kullanim)}`);
+      if (answers.kamera_kolay_alan_ev)
+        lines.push(`Alan: ${label(KOLAY_ALAN_EV_LABELS, answers.kamera_kolay_alan_ev)}`);
+      if (answers.kamera_kolay_alan_isyeri?.length)
+        lines.push(`Alan: ${answers.kamera_kolay_alan_isyeri.map((v) => label(KOLAY_ALAN_ISYERI_LABELS, v)).join(', ')}`);
+      if (answers.kamera_kolay_alan_apartman?.length)
+        lines.push(`Alan: ${answers.kamera_kolay_alan_apartman.map((v) => label(KOLAY_ALAN_APARTMAN_LABELS, v)).join(', ')}`);
+      if (answers.kamera_kolay_ihtiyac?.length)
+        lines.push(`İhtiyaç: ${answers.kamera_kolay_ihtiyac.map((v) => label(KOLAY_IHTIYAC_LABELS, v)).join(', ')}`);
+    } else {
+      if (answers.kamera_sistem_tipi) lines.push(`Sistem tipi: ${answers.kamera_sistem_tipi}`);
+      if (answers.kamera_adet)        lines.push(`Kamera adedi: ${answers.kamera_adet}`);
+      if (answers.kamera_yer)         lines.push(`Kurulum yeri: ${label(YER_LABELS, answers.kamera_yer)}`);
+      if (answers.kamera_not)         lines.push(`Detay: ${answers.kamera_not}`);
+      if (answers.kamera_detay) {
+        lines.push('');
+        lines.push('Mevcut Sistem Bilgisi');
+        lines.push(answers.kamera_detay);
+      }
     }
   }
 
@@ -223,10 +258,17 @@ export function buildWaMessage(flowId, answers, refCode) {
 
   if (flowId === 'kamera') {
     lines.push('');
-    lines.push(
-      'Varsa mevcut sistem fotoğraflarını ve ' +
-      'ekran görüntüsünü bu mesaja ekleyebilirsiniz.'
-    );
+    if (answers.experience_mode === 'simple') {
+      lines.push(
+        'TEHAŞ ön notu: Seçimlerinize göre teknik değerlendirme yapılacaktır. ' +
+        'Konum ve alan fotoğrafını bu WhatsApp görüşmesinden paylaşabilirsiniz.'
+      );
+    } else {
+      lines.push(
+        'Varsa mevcut sistem fotoğraflarını ve ' +
+        'ekran görüntüsünü bu mesaja ekleyebilirsiniz.'
+      );
+    }
   }
 
   return lines.join('\n');
@@ -268,16 +310,32 @@ export function buildSummaryRows(flowId, answers) {
   }
 
   if (flowId === 'kamera') {
-    if (answers.kamera_sistem_tipi)
-      rows.push({ k: 'Sistem tipi', v: answers.kamera_sistem_tipi });
-    if (answers.kamera_adet)
-      rows.push({ k: 'Kamera adedi', v: answers.kamera_adet });
-    if (answers.kamera_yer)
-      rows.push({ k: 'Kurulum yeri', v: label(YER_LABELS, answers.kamera_yer) });
-    if (answers.kamera_not)
-      rows.push({ k: 'Detay', v: answers.kamera_not });
-    if (answers.kamera_detay)
-      rows.push({ k: 'Mevcut Sistem', v: answers.kamera_detay });
+    const mod = EXPERIENCE_MODE_LABELS[answers.experience_mode] || answers.experience_mode;
+    if (mod) rows.push({ k: 'Anlatım modu', v: mod });
+
+    if (answers.experience_mode === 'simple') {
+      if (answers.kamera_kolay_kullanim)
+        rows.push({ k: 'Kullanım', v: label(KOLAY_KULLANIM_LABELS, answers.kamera_kolay_kullanim) });
+      if (answers.kamera_kolay_alan_ev)
+        rows.push({ k: 'Alan', v: label(KOLAY_ALAN_EV_LABELS, answers.kamera_kolay_alan_ev) });
+      if (answers.kamera_kolay_alan_isyeri?.length)
+        rows.push({ k: 'Alan', v: answers.kamera_kolay_alan_isyeri.map((v) => label(KOLAY_ALAN_ISYERI_LABELS, v)).join(', ') });
+      if (answers.kamera_kolay_alan_apartman?.length)
+        rows.push({ k: 'Alan', v: answers.kamera_kolay_alan_apartman.map((v) => label(KOLAY_ALAN_APARTMAN_LABELS, v)).join(', ') });
+      if (answers.kamera_kolay_ihtiyac?.length)
+        rows.push({ k: 'İhtiyaç', v: answers.kamera_kolay_ihtiyac.map((v) => label(KOLAY_IHTIYAC_LABELS, v)).join(', ') });
+    } else {
+      if (answers.kamera_sistem_tipi)
+        rows.push({ k: 'Sistem tipi', v: answers.kamera_sistem_tipi });
+      if (answers.kamera_adet)
+        rows.push({ k: 'Kamera adedi', v: answers.kamera_adet });
+      if (answers.kamera_yer)
+        rows.push({ k: 'Kurulum yeri', v: label(YER_LABELS, answers.kamera_yer) });
+      if (answers.kamera_not)
+        rows.push({ k: 'Detay', v: answers.kamera_not });
+      if (answers.kamera_detay)
+        rows.push({ k: 'Mevcut Sistem', v: answers.kamera_detay });
+    }
   }
 
   if (flowId === 'apartman') {
