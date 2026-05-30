@@ -19,7 +19,7 @@ export default function HomeScreen({ onFlowStart }) {
           <div className="brand-logo" aria-hidden="true" />
           <div>
             <div className="brand-name">TEHAŞ</div>
-            <div className="brand-sub">Teknik Hizmetler</div>
+            <div className="brand-sub">Teknik Hizmetler Asistanınız</div>
           </div>
         </div>
       </header>
