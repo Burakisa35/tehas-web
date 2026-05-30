@@ -41,6 +41,12 @@ const FLOWS = [
     sub: 'Alarm, diyafon ve kartlı geçiş',
     ico: '🔔',
   },
+  {
+    id: 'basvuru',
+    label: 'Teknisyen Başvurusu',
+    sub: 'TEHAŞ ekibine katılmak için başvur',
+    ico: '🧑‍🔧',
+  },
 ];
 
 export default function HomeScreen({ onFlowStart }) {

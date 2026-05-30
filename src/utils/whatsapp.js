@@ -47,6 +47,7 @@ const HIZMET_LABELS = {
   elektrik: 'Elektrik', kamera: 'Güvenlik Kamerası',
   uydu: 'Uydu / Anten', ag: 'Ağ / İnternet',
   otomasyon: 'Kapı / Kepenk Otomasyonu', alarm: 'Alarm / Diyafon',
+  basvuru: 'Teknisyen Başvurusu',
 };
 
 function label(map, val) {
@@ -85,6 +86,26 @@ export function buildWaMessage(flowId, answers, refCode) {
     if (answers.elektrik_hat_metre) {
       lines.push(`Hat mesafesi: ${answers.elektrik_hat_metre}`);
     }
+  }
+
+  // Başvuru
+  if (flowId === 'basvuru') {
+    if (answers.basvuru_ad)
+      lines.push(`Ad: ${answers.basvuru_ad}`);
+    if (answers.basvuru_soyad)
+      lines.push(`Soyad: ${answers.basvuru_soyad}`);
+    if (answers.basvuru_yas)
+      lines.push(`Yaş: ${answers.basvuru_yas}`);
+    if (answers.basvuru_deneyim_alan)
+      lines.push(`Deneyim alanı: ${label(HIZMET_LABELS, answers.basvuru_deneyim_alan)}`);
+    if (answers.basvuru_deneyim_yil)
+      lines.push(`Deneyim yılı: ${answers.basvuru_deneyim_yil}`);
+    if (answers.basvuru_arac)
+      lines.push(`Araç: ${answers.basvuru_arac}`);
+    if (answers.ilce)
+      lines.push(`Çalışmak istediği ilçe: ${answers.ilce}`);
+    if (answers.basvuru_not)
+      lines.push(`Tanıtım: ${answers.basvuru_not}`);
   }
 
   // Kamera özeli
