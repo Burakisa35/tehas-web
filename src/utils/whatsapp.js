@@ -94,18 +94,18 @@ export function buildWaMessage(flowId, answers, refCode) {
       lines.push(`Ad: ${answers.basvuru_ad}`);
     if (answers.basvuru_soyad)
       lines.push(`Soyad: ${answers.basvuru_soyad}`);
-    if (answers.basvuru_yas)
-      lines.push(`Yaş: ${answers.basvuru_yas}`);
-    if (answers.basvuru_deneyim_alan)
-      lines.push(`Deneyim alanı: ${label(HIZMET_LABELS, answers.basvuru_deneyim_alan)}`);
-    if (answers.basvuru_deneyim_yil)
-      lines.push(`Deneyim yılı: ${answers.basvuru_deneyim_yil}`);
-    if (answers.basvuru_arac)
-      lines.push(`Araç: ${answers.basvuru_arac}`);
+    if (answers.basvuru_cinsiyet)
+      lines.push(`Cinsiyet: ${answers.basvuru_cinsiyet}`);
+    if (answers.basvuru_tel)
+      lines.push(`Telefon: ${answers.basvuru_tel}`);
+    if (answers.basvuru_rol)
+      lines.push(`Rol: ${answers.basvuru_rol}`);
+    if (answers.basvuru_alanlar && answers.basvuru_alanlar.length)
+      lines.push(`Uzmanlık alanları: ${answers.basvuru_alanlar.map(v => label(HIZMET_LABELS, v) || v).join(', ')}`);
     if (answers.ilce)
       lines.push(`Çalışmak istediği ilçe: ${answers.ilce}`);
-    if (answers.basvuru_not)
-      lines.push(`Tanıtım: ${answers.basvuru_not}`);
+    if (answers.basvuru_deneyim)
+      lines.push(`Deneyim: ${answers.basvuru_deneyim}`);
   }
 
   // Kamera özeli

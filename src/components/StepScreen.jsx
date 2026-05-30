@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ILCELER, ILCE_LISTESI } from '../data/ilceler.js';
 
 // ── Seçim listesi ─────────────────────────────────────────────────
@@ -61,6 +61,163 @@ function isValidTurkishMobile(digits) {
 const AD_REGEX = /^[a-zA-ZğüşıöçĞÜŞİÖÇ\s]{2,}$/;
 function isValidName(val) {
   return AD_REGEX.test((val || '').trim());
+}
+
+// ── Splash ekranı — 3 sn otomatik geçiş ──────────────────────────
+function SplashStep({ onNext }) {
+  useEffect(() => {
+    const t = setTimeout(onNext, 3000);
+    return () => clearTimeout(t);
+  }, [onNext]);
+
+  return (
+    <div
+      className="app"
+      style={{ justifyContent: 'center', alignItems: 'center', textAlign: 'center', padding: '0 28px' }}
+    >
+      <div>
+        <div
+          className="brand-logo"
+          style={{ width: 64, height: 64, borderRadius: 18, margin: '0 auto 22px', flexShrink: 0 }}
+          aria-hidden="true"
+        />
+        <div
+          className="brand-name"
+          style={{ fontSize: 18, letterSpacing: '.22em', marginBottom: 16, display: 'block' }}
+        >
+          TEHAŞ
+        </div>
+        <h1
+          style={{
+            fontSize: 28, fontWeight: 700, color: '#fff',
+            lineHeight: 1.2, letterSpacing: '-.02em', marginBottom: 12,
+          }}
+        >
+          Yuvaya hoş geldiniz.
+        </h1>
+        <p style={{ fontSize: 14, color: 'var(--t-3)', marginBottom: 40 }}>
+          Başvuru formuna yönlendiriliyorsunuz…
+        </p>
+        <div style={{ display: 'flex', justifyContent: 'center', gap: 6 }}>
+          {[0, 1, 2].map((i) => (
+            <div
+              key={i}
+              style={{
+                width: 6, height: 6, borderRadius: '50%',
+                background: i === 0 ? 'var(--cyan)' : 'var(--line-2)',
+                animation: `dot-pulse 1.2s ease-in-out ${i * 0.2}s infinite`,
+              }}
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ── Çoklu seçim listesi ───────────────────────────────────────────
+function MultiChoiceList({ options, values, onChange }) {
+  const sel = values || [];
+  return (
+    <div className="choices">
+      {options.map((opt) => {
+        const isSelected = sel.includes(opt.value);
+        return (
+          <button
+            key={opt.value}
+            type="button"
+            className={`choice${isSelected ? ' selected' : ''}`}
+            onClick={() => {
+              const next = isSelected
+                ? sel.filter((v) => v !== opt.value)
+                : [...sel, opt.value];
+              onChange(next);
+            }}
+            aria-pressed={isSelected}
+          >
+            {opt.ico && <span className="choice-ico" aria-hidden="true">{opt.ico}</span>}
+            <div className="choice-body">
+              <div className="choice-title">{opt.label}</div>
+              {opt.sub && <div className="choice-sub">{opt.sub}</div>}
+            </div>
+            <span className="choice-check" aria-hidden="true">
+              {isSelected && (
+                <svg width="11" height="9" viewBox="0 0 11 9" fill="none">
+                  <path d="M1 4.5L4 7.5L10 1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              )}
+            </span>
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+// ── Başvuru iletişim formu ────────────────────────────────────────
+function BasvuruContactForm({ answers, onChange }) {
+  const [adTouched,  setAdTouched]  = useState(false);
+  const [soyTouched, setSoyTouched] = useState(false);
+  const [telTouched, setTelTouched] = useState(false);
+
+  const adVal   = answers.basvuru_ad   || '';
+  const soyVal  = answers.basvuru_soyad || '';
+  const adErr   = adTouched  && adVal.length  > 0 && !isValidName(adVal);
+  const soyErr  = soyTouched && soyVal.length > 0 && !isValidName(soyVal);
+  const digits  = extractDigits(answers.basvuru_tel || '');
+  const telErr  = telTouched && digits.length > 2 && !isValidTurkishMobile(digits);
+
+  const errStyle = { borderColor: 'rgba(248,113,113,.65)' };
+  const errMsg   = (id, msg) => (
+    <p role="alert" style={{ fontSize: 12, color: 'var(--red)', marginTop: 6, lineHeight: 1.4 }}
+       id={id}>{msg}</p>
+  );
+
+  return (
+    <div className="field-group">
+      <div>
+        <label className="field-label" htmlFor="bav_ad">Ad</label>
+        <input id="bav_ad" className="field-input" type="text" autoComplete="given-name"
+          placeholder="Ahmet" style={adErr ? errStyle : undefined}
+          value={adVal} onChange={(e) => onChange('basvuru_ad', e.target.value)}
+          onBlur={() => setAdTouched(true)} />
+        {adErr && errMsg('bav-ad-err', 'Yalnızca harf girin (en az 2 karakter)')}
+      </div>
+      <div>
+        <label className="field-label" htmlFor="bav_soyad">Soyad</label>
+        <input id="bav_soyad" className="field-input" type="text" autoComplete="family-name"
+          placeholder="Yılmaz" style={soyErr ? errStyle : undefined}
+          value={soyVal} onChange={(e) => onChange('basvuru_soyad', e.target.value)}
+          onBlur={() => setSoyTouched(true)} />
+        {soyErr && errMsg('bav-soy-err', 'Yalnızca harf girin (en az 2 karakter)')}
+      </div>
+      <div>
+        <label className="field-label" htmlFor="bav_tel">Telefon</label>
+        <input id="bav_tel" className="field-input" type="tel" inputMode="numeric"
+          autoComplete="tel" placeholder="05XX XXX XX XX" maxLength={14}
+          style={telErr ? errStyle : undefined}
+          value={answers.basvuru_tel || ''}
+          onChange={(e) => onChange('basvuru_tel', formatPhone(e.target.value))}
+          onFocus={() => { if (!answers.basvuru_tel) onChange('basvuru_tel', '05'); }}
+          onBlur={() => setTelTouched(true)} />
+        {telErr && errMsg('bav-tel-err', 'Geçerli bir Türk cep numarası girin (05XX XXX XX XX)')}
+      </div>
+      <div>
+        <label className="field-label" htmlFor="bav_cinsiyet">Cinsiyet</label>
+        <select id="bav_cinsiyet" className="field-select"
+          value={answers.basvuru_cinsiyet || ''}
+          onChange={(e) => onChange('basvuru_cinsiyet', e.target.value)}>
+          <option value="">Seçin…</option>
+          <option value="erkek">Erkek</option>
+          <option value="kadin">Kadın</option>
+          <option value="belirtmiyorum">Belirtmek istemiyorum</option>
+        </select>
+      </div>
+      <p style={{ fontSize: 11, color: 'var(--t-4)', lineHeight: 1.5, marginTop: 4 }}>
+        Bilgileriniz yalnızca başvuru sürecinde kullanılır. KVKK kapsamında korunur.
+      </p>
+    </div>
+  );
 }
 
 // ── İletişim formu ────────────────────────────────────────────────
@@ -288,13 +445,24 @@ export default function StepScreen({
   onBack,
   onSkip,
   isFirst,
+  transitionClass,
 }) {
+  // Splash: 3 saniye otomatik geçiş — tüm render'ı döndür
+  if (step.type === 'splash') {
+    return <SplashStep onNext={onNext} />;
+  }
+
   const pct = Math.round(((stepIndex + 1) / totalSteps) * 100);
 
-  // İletişim: ad regex + Türk GSM kuralı
+  // İletişim validasyonu
   const isContactValid =
-    step.type !== 'contact' ||
-    (isValidName(answers.iletisim_ad) && isValidTurkishMobile(extractDigits(answers.iletisim_tel)));
+    step.type === 'contact'
+      ? isValidName(answers.iletisim_ad) && isValidTurkishMobile(extractDigits(answers.iletisim_tel))
+      : step.type === 'basvuru-contact'
+        ? isValidName(answers.basvuru_ad) &&
+          isValidName(answers.basvuru_soyad) &&
+          isValidTurkishMobile(extractDigits(answers.basvuru_tel || ''))
+        : true;
 
   // İlçe veya mahalle seçiminde değer var mı?
   const hasLocationValue =
@@ -306,20 +474,36 @@ export default function StepScreen({
     (step.type === 'choice' || step.type === 'choice-grid') &&
     !!answers[step.id];
 
-  // İlçe seçilmemişse (placeholder) Devam Et disabled — Skip hâlâ çalışır
+  // Çoklu seçimde en az 1 seçim var mı?
+  const hasMultiChoice =
+    step.type === 'multi-choice' &&
+    (answers[step.id] || []).length > 0;
+
+  // İlçe seçilmemişse Devam Et disabled (required=true ise zaten hasLocationValue kapatıyor)
   const ilceBlocked = step.type === 'ilce-select' && !answers.ilce;
 
   // İleri butonu aktif mi?
   const canProceed = step.required
-    ? isContactValid || hasLocationValue || hasChoiceValue
+    ? isContactValid || hasLocationValue || hasChoiceValue || hasMultiChoice
     : !ilceBlocked;
+
+  // Otomatik geçiş: tek seçimli adımlarda seçince 300ms sonra ilerle
+  function handleAutoChoice(val) {
+    onAnswer(step.id, val);
+    setTimeout(onNext, 300);
+  }
+
+  function handleIlceAutoAdvance(val) {
+    onAnswer('ilce', val);
+    if (val) setTimeout(onNext, 300);
+  }
 
   function handleContactChange(field, val) {
     onAnswer(field, val);
   }
 
   return (
-    <div className="app">
+    <div className={`app${transitionClass ? ` ${transitionClass}` : ''}`}>
       {/* Header */}
       <header className="hdr">
         <div className="brand">
@@ -367,21 +551,30 @@ export default function StepScreen({
           </div>
         )}
 
-        {/* Seçim listesi */}
+        {/* Seçim listesi — seçince otomatik ilerle */}
         {(step.type === 'choice' || step.type === 'choice-grid') && (
           <ChoiceList
             options={step.options}
             value={answers[step.id]}
-            onChange={(val) => onAnswer(step.id, val)}
+            onChange={handleAutoChoice}
             grid={step.type === 'choice-grid'}
           />
         )}
 
-        {/* İlçe seçimi */}
+        {/* Çoklu seçim — Devam Et ile */}
+        {step.type === 'multi-choice' && (
+          <MultiChoiceList
+            options={step.options}
+            values={answers[step.id]}
+            onChange={(val) => onAnswer(step.id, val)}
+          />
+        )}
+
+        {/* İlçe seçimi — seçince otomatik ilerle */}
         {step.type === 'ilce-select' && (
           <IlceSelect
             value={answers.ilce}
-            onChange={(val) => onAnswer('ilce', val)}
+            onChange={handleIlceAutoAdvance}
           />
         )}
 
@@ -394,9 +587,14 @@ export default function StepScreen({
           />
         )}
 
-        {/* İletişim */}
+        {/* Müşteri iletişim */}
         {step.type === 'contact' && (
           <ContactForm answers={answers} onChange={handleContactChange} />
+        )}
+
+        {/* Başvuru iletişim */}
+        {step.type === 'basvuru-contact' && (
+          <BasvuruContactForm answers={answers} onChange={handleContactChange} />
         )}
 
         {/* Textarea */}
@@ -413,7 +611,7 @@ export default function StepScreen({
           disabled={!canProceed}
           aria-label="Sonraki adıma geç"
         >
-          {step.type === 'contact' ? 'Talep Oluştur →' : 'Devam Et →'}
+          {step.type === 'basvuru-contact' ? 'Gönder →' : step.type === 'contact' ? 'Talep Oluştur →' : 'Devam Et →'}
         </button>
       </div>
 
