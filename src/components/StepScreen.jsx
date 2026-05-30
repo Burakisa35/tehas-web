@@ -603,17 +603,19 @@ export default function StepScreen({
         )}
       </div>
 
-      {/* CTA */}
-      <div className="cta-area">
-        <button
-          className="btn-primary"
-          onClick={onNext}
-          disabled={!canProceed}
-          aria-label="Sonraki adıma geç"
-        >
-          {step.type === 'basvuru-contact' ? 'Gönder →' : step.type === 'contact' ? 'Talep Oluştur →' : 'Devam Et →'}
-        </button>
-      </div>
+      {/* CTA — choice/choice-grid/ilce-select auto-advance kullanır, buton gösterilmez */}
+      {!['choice', 'choice-grid', 'ilce-select'].includes(step.type) && (
+        <div className="cta-area">
+          <button
+            className="btn-primary"
+            onClick={onNext}
+            disabled={!canProceed}
+            aria-label="Sonraki adıma geç"
+          >
+            {step.type === 'basvuru-contact' ? 'Gönder →' : step.type === 'contact' ? 'Talep Oluştur →' : 'Devam Et →'}
+          </button>
+        </div>
+      )}
 
       {/* Geri + Atla */}
       <div className="nav-row">

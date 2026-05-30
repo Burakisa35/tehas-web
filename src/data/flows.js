@@ -412,7 +412,7 @@ export const BASVURU_FLOW = {
         { value: 'her_ikisi',  label: 'Her İkisi',        ico: '⚡', sub: 'Esnek, her iki rolde çalışabilirim' },
       ],
     },
-    // Adım 3: Alan — çoklu seçim, Devam Et ile
+    // Adım 3: Alan — çoklu seçim, Devam Et ile (yalnızca saha/her_ikisi rolünde göster)
     {
       id: 'basvuru_alanlar',
       label: 'Uzmanlık Alanları',
@@ -421,6 +421,7 @@ export const BASVURU_FLOW = {
       type: 'multi-choice',
       required: true,
       skipLabel: null,
+      condition: (a) => a.basvuru_rol === 'saha' || a.basvuru_rol === 'her_ikisi',
       options: [
         { value: 'elektrik',  label: 'Elektrik Tesisatı',  ico: '⚡' },
         { value: 'kamera',    label: 'Güvenlik Kamerası',   ico: '📷' },

@@ -116,7 +116,7 @@ export default function HomeScreen({ onFlowStart }) {
         {FLOWS.map((f) => (
           <button
             key={f.id}
-            className={`home-card${f.primary ? ' primary' : ''}`}
+            className="home-card"
             onClick={() => onFlowStart(f.id)}
             aria-label={`${f.label} hizmetini seç`}
           >
