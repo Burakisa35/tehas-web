@@ -260,9 +260,9 @@ export const ELEKTRIK_FLOW = {
         { value: '100m_ustu',label: '100m+',     ico: '📏' },
       ],
     },
-    ILETISIM_ADIMI,
     ...KONUM_ADIMLARI,
     ZAMAN_ADIMI,
+    ILETISIM_ADIMI,
   ],
 };
 
@@ -362,10 +362,10 @@ export const KAMERA_FLOW = {
         { value: 'sadece_canli',   label: 'Sadece canlı izleme',     ico: '👁️' },
       ],
     },
-    { ...ILETISIM_ADIMI,     condition: (a) => a.experience_mode === 'simple' },
     { ...KONUM_ADIMLARI[0],  condition: (a) => a.experience_mode === 'simple' },
     { ...KONUM_ADIMLARI[1],  condition: (a) => a.experience_mode === 'simple' && !!a.ilce },
     { ...ZAMAN_ADIMI,        condition: (a) => a.experience_mode === 'simple' },
+    { ...ILETISIM_ADIMI,     condition: (a) => a.experience_mode === 'simple' },
 
     // ── Teknik mod ────────────────────────────────────────────────
     {
@@ -454,10 +454,10 @@ export const KAMERA_FLOW = {
       skipLabel: 'Hayır, yeterli',
       condition: (a) => a.experience_mode === 'technical' && ['yeni_sistem','apartman_kamera','isyeri_kamera','villa_kamera','entegrasyon','solar_4g'].includes(a.kamera_is_tipi),
     },
-    { ...ILETISIM_ADIMI,    condition: (a) => a.experience_mode === 'technical' },
     { ...KONUM_ADIMLARI[0], condition: (a) => a.experience_mode === 'technical' },
     { ...KONUM_ADIMLARI[1], condition: (a) => a.experience_mode === 'technical' && !!a.ilce },
     { ...ZAMAN_ADIMI,       condition: (a) => a.experience_mode === 'technical' },
+    { ...ILETISIM_ADIMI,    condition: (a) => a.experience_mode === 'technical' },
   ],
 };
 
@@ -484,9 +484,9 @@ export const UYDU_FLOW = {
         { value: 'diger',        label: 'Diğer / Emin değilim',        ico: '💬', sub: '' },
       ],
     },
-    ILETISIM_ADIMI,
     ...KONUM_ADIMLARI,
     ZAMAN_ADIMI,
+    ILETISIM_ADIMI,
   ],
 };
 
@@ -549,9 +549,9 @@ export const AG_FLOW = {
         { value: '100m_ustu',label: '100m+',    ico: '📏' },
       ],
     },
-    ILETISIM_ADIMI,
     ...KONUM_ADIMLARI,
     ZAMAN_ADIMI,
+    ILETISIM_ADIMI,
   ],
 };
 
@@ -576,9 +576,9 @@ export const OTOMASYON_FLOW = {
         { value: 'diger',  label: 'Diğer / Emin değilim',       ico: '💬', sub: '' },
       ],
     },
-    ILETISIM_ADIMI,
     ...KONUM_ADIMLARI,
     ZAMAN_ADIMI,
+    ILETISIM_ADIMI,
   ],
 };
 
@@ -607,9 +607,9 @@ export const ALARM_FLOW = {
         { value: 'diger',        label: 'Diğer / Emin değilim',     ico: '💬', sub: '' },
       ],
     },
-    ILETISIM_ADIMI,
     ...KONUM_ADIMLARI,
     ZAMAN_ADIMI,
+    ILETISIM_ADIMI,
   ],
 };
 
@@ -914,9 +914,9 @@ export const AKILLI_EV_FLOW = {
         { value: 'yok',         label: 'Hayır, öneri istiyorum', ico: '❓' },
       ],
     },
-    ILETISIM_ADIMI,
     ...KONUM_ADIMLARI,
     ZAMAN_ADIMI,
+    ILETISIM_ADIMI,
   ],
 };
 
@@ -972,9 +972,9 @@ export const SOLAR_FLOW = {
         { value: 'tarim',  label: 'Tarım / Arazi', ico: '🌾' },
       ],
     },
-    ILETISIM_ADIMI,
     ...KONUM_ADIMLARI,
     ZAMAN_ADIMI,
+    ILETISIM_ADIMI,
   ],
 };
 
@@ -1316,9 +1316,9 @@ export const KOLAY_HIZMET_FLOW = {
     },
 
     // ── Ortak kapanış adımları ───────────────────────────────────
-    ILETISIM_ADIMI,
     ...KONUM_ADIMLARI,
     ZAMAN_ADIMI,
+    ILETISIM_ADIMI,
   ],
 };
 
