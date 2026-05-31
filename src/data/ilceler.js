@@ -55,4 +55,19 @@ export const ILCELER = {
   ],
 };
 
-export const ILCE_LISTESI = Object.keys(ILCELER);
+export const ILCE_LISTESI = [
+  'Kemalpaşa',
+  'Bornova',
+  // Geri kalanlar
+  'Bayraklı',
+  'Karşıyaka',
+  'Çiğli',
+  'Menemen',
+  'Aliağa',
+  'Bergama',
+  'Foça',
+  'Güzelbahçe',
+  'Torbalı',
+  'Tire',
+  'Ödemiş',
+];

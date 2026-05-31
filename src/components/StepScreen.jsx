@@ -310,6 +310,9 @@ export { extractDigits, isValidTurkishMobile, isValidName };
 
 // ── Konum seçimi ──────────────────────────────────────────────────
 function IlceSelect({ value, onChange }) {
+  const primary = ['Kemalpaşa', 'Bornova'];
+  const diger = ILCE_LISTESI.filter((i) => !primary.includes(i));
+
   return (
     <select
       className="field-select"
@@ -318,9 +321,14 @@ function IlceSelect({ value, onChange }) {
       aria-label="İlçe seçin"
     >
       <option value="">İlçe seçin…</option>
-      {ILCE_LISTESI.map((ilce) => (
+      {primary.map((ilce) => (
         <option key={ilce} value={ilce}>{ilce}</option>
       ))}
+      <optgroup label="──── Diğer İlçeler ────">
+        {diger.map((ilce) => (
+          <option key={ilce} value={ilce}>{ilce}</option>
+        ))}
+      </optgroup>
     </select>
   );
 }
@@ -452,8 +460,6 @@ export default function StepScreen({
     return <SplashStep onNext={onNext} />;
   }
 
-  const pct = Math.round(((stepIndex + 1) / totalSteps) * 100);
-
   // İletişim validasyonu
   const isContactValid =
     step.type === 'contact'
@@ -524,14 +530,6 @@ export default function StepScreen({
           </button>
         )}
       </header>
-
-      {/* Progress */}
-      <div className="progress" role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100}>
-        <div className="progress-track">
-          <div className="progress-fill" style={{ width: `${pct}%` }} />
-        </div>
-        <span className="progress-label">{stepIndex + 1}/{totalSteps}</span>
-      </div>
 
       {/* Step content */}
       <div className="step-screen">
